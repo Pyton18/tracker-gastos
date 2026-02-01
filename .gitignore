@@ -1,0 +1,26 @@
+# Datos personales (extractos bancarios, outputs)
+Gastos/
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+env/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Excel temporales
+~$*
+
+# Config con datos personales (nombres, montos). Usar .ejemplo.json como base.
+config/categorias.json
+config/objetivos.json

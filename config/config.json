@@ -1,0 +1,16 @@
+{
+  "periodo_actual": null,
+  "debug_import": false,
+  "reporte_sin_asignar": true,
+  "rutas": {
+    "entrada": "Gastos",
+    "estandarizado": "data/estandarizado",
+    "categorizado": "data/categorizado",
+    "metricas": "data/metricas"
+  },
+  "estructura_mensual": {
+    "descripcion": "Para producción: crear subcarpetas YYYY-MM dentro de entrada (ej: Gastos/2025-01/). Si no hay subcarpetas, se procesa todo como un solo período.",
+    "formato_periodo": "YYYY-MM"
+  },
+  "formato_salida": "xlsx"
+}

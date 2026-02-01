@@ -1,0 +1,14 @@
+{
+  "descripcion": "Topes de gasto por categoría. % cumplimiento = 100 cuando gastaste exactamente el tope, >100 si pasaste, <100 si no llegaste. Total = suma de las 5 categorías.",
+  "categorias": {
+    "Vivienda y Fijos": 750000,
+    "Transporte (Auto)": 360000,
+    "Abastecimiento": 450000,
+    "Salud y Bienestar": 300000,
+    "Ocio y Estilo de Vida": 440000
+  },
+  "total": 2300000,
+  "excluir": {
+    "pagos_tarjeta": true
+  }
+}

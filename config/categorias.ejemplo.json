@@ -1,0 +1,156 @@
+{
+  "descripcion": "keywords: subcadenas cortas (case insensitive). Si alguna está en la descripción, matchea. Orden importa: primera coincidencia gana.",
+  "categorias": [
+    {
+      "nombre": "Sueldo",
+      "keywords": [
+        "pago haberes",
+        "haberes interbanking",
+        "sueldo"
+      ]
+    },
+    {
+      "nombre": "Otras ganancias",
+      "keywords": [
+        "transferencia recibida",
+        "credin",
+        "debin",
+        "rendimientos",
+        "pago interes por saldo",
+        "promo modo",
+        "fondos rapidos",
+        "cons prop"
+      ]
+    },
+    {
+      "nombre": "Ahorro / Inversión",
+      "keywords": [
+        "balanz",
+        "plazo fijo",
+        "inversión",
+        "ahorro",
+        "freenanc"
+      ]
+    },
+    {
+      "nombre": "Vivienda y Fijos",
+      "keywords": [
+        "abl",
+        "edenor",
+        "edenordigital",
+        "iplan",
+        "luz",
+        "gas",
+        "agua",
+        "expensas",
+        "internet",
+        "telefono",
+        "snp debito directo",
+        "nss",
+        "NOMBRE_PERSONA_1",
+        "NOMBRE_PERSONA_2"
+      ]
+    },
+    {
+      "nombre": "Transporte (Auto)",
+      "keywords": [
+        "aubasa",
+        "autopista",
+        "corredores viale",
+        "autopistas urban",
+        "shell",
+        "ypf",
+        "est de servicio",
+        "estacion de servicio",
+        "nafta",
+        "combustible",
+        "gomeria",
+        "sube viajes",
+        "uber",
+        "payu",
+        "taxi",
+        "zurich",
+        "seguro",
+        "sancor",
+        "villar sa"
+      ]
+    },
+    {
+      "nombre": "Abastecimiento",
+      "keywords": [
+        "coto",
+        "dia tienda",
+        "super chapa",
+        "chapa",
+        "carrefour",
+        "jumbo",
+        "disco",
+        "supermercado",
+        "mercadolibre",
+        "delta venticuatro",
+        "NOMBRE_PERSONA_3",
+        "bettercatering"
+      ]
+    },
+    {
+      "nombre": "Salud y Bienestar",
+      "keywords": [
+        "farmacity",
+        "farmacia",
+        "obra social",
+        "NOMBRE_PERSONA_4"
+      ]
+    },
+    {
+      "nombre": "Educación",
+      "keywords": [
+        "udemy",
+        "edutopia",
+        "centrodeelear"
+      ]
+    },
+    {
+      "nombre": "Ocio y Estilo de Vida",
+      "keywords": [
+        "adidas",
+        "salomon",
+        "centrodeelear",
+        "kiddo",
+        "bettercatering",
+        "cafeteria",
+        "restaurante",
+        "pedidos ya",
+        "rappi",
+        "starbucks",
+        "netflix",
+        "spotify",
+        "youtube",
+        "photostore",
+        "cristobal colon",
+        "deheza pinamar",
+        "dontoto",
+        "hapsa",
+        "jeronimo",
+        "makena",
+        "open25",
+        "skarte",
+        "umano",
+        "ventinewyearu",
+        "paper u",
+        "atreuco",
+        "bnn costanera",
+        "transferencia inmediata",
+        "transferencias inmediatas",
+        "transferencia realizada",
+        "transferencia enviada"
+      ]
+    },
+    {
+      "nombre": "Pago Tarjetas",
+      "keywords": [
+        "pago tarjeta"
+      ]
+    }
+  ],
+  "fallback": "Sin asignar"
+}
