@@ -23,7 +23,7 @@ def cargar_config() -> dict:
 
 def listar_archivos_a_procesar(ruta: Path) -> list[Path]:
     """Lista archivos CSV y XLSX en la ruta. Excluye temp de Excel (~$)."""
-    extensiones = {".csv", ".xlsx", ".xls"}
+    extensiones = {".csv", ".xlsx", ".xls", ".pdf"}
     archivos = []
     for ext in extensiones:
         archivos.extend(ruta.glob(f"*{ext}"))
@@ -55,6 +55,8 @@ def procesar_periodo(periodo: str, ruta: Path, salida: Path, formato: str) -> in
 
     df_final = pd.concat(dfs, ignore_index=True)
     df_final = df_final[COLUMNAS_ESTANDAR]
+    # Evitar doble importación cuando conviven fuentes (p.ej. XLS + PDF del mismo período)
+    df_final = df_final.drop_duplicates(subset=["fecha", "descripcion", "monto"], keep="first")
     df_final = df_final.sort_values(["fecha", "origen"])
 
     salida.mkdir(parents=True, exist_ok=True)

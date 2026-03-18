@@ -43,8 +43,24 @@ def _parsear_monto(val):
 
 
 def _detectar_tipo_archivo(ruta: Path) -> str:
-    """Devuelve 'mercadopago' | 'debito' | 'credito' | None."""
+    """Devuelve 'mercadopago' | 'debito' | 'credito' | 'debito_pdf' | 'credito_pdf' | None."""
     name = ruta.name.lower()
+    suf = ruta.suffix.lower()
+
+    if suf == ".pdf":
+        try:
+            # En algunos PDFs el contenido de "movimientos" aparece recién en páginas 2-3
+            texto = _leer_pdf_texto(ruta, max_paginas=3).lower()
+        except Exception:
+            texto = ""
+        # Santander "Mi resumen de cuenta" (cuenta / débito)
+        if "mi resumen de cuenta" in texto or "movimientos en pesos" in texto:
+            return "debito_pdf"
+        # Santander VISA resumen
+        if "resumen de cuenta" in texto and "visa" in texto:
+            return "credito_pdf"
+        return None
+
     if "account_statement" in name or "mercadopago" in name:
         return "mercadopago"
     if "movimientos" in name or "debito" in name or "cuenta" in name:
@@ -52,6 +68,23 @@ def _detectar_tipo_archivo(ruta: Path) -> str:
     if "visa" in name or "consumos" in name or "credito" in name or "master" in name:
         return "credito"
     return None
+
+
+def _leer_pdf_texto(ruta: Path, max_paginas: int | None = None) -> str:
+    """
+    Extrae texto de un PDF (no OCR).
+    Requiere PDF con texto seleccionable.
+    """
+    import pdfplumber
+
+    chunks: list[str] = []
+    with pdfplumber.open(ruta) as pdf:
+        paginas = pdf.pages if max_paginas is None else pdf.pages[:max_paginas]
+        for p in paginas:
+            t = p.extract_text() or ""
+            if t:
+                chunks.append(t)
+    return "\n".join(chunks)
 
 
 def importar_mercadopago(ruta: Path, periodo: str) -> pd.DataFrame:
@@ -225,6 +258,215 @@ def importar_credito(ruta: Path, periodo: str, debug: bool = False) -> pd.DataFr
     return pd.DataFrame(rows)
 
 
+_MESES_ES = {
+    "ene": 1,
+    "enero": 1,
+    "feb": 2,
+    "febrero": 2,
+    "mar": 3,
+    "marzo": 3,
+    "abr": 4,
+    "abril": 4,
+    "may": 5,
+    "mayo": 5,
+    "jun": 6,
+    "junio": 6,
+    "jul": 7,
+    "julio": 7,
+    "ago": 8,
+    "agosto": 8,
+    "sep": 9,
+    "sept": 9,
+    "septiembre": 9,
+    "oct": 10,
+    "octubre": 10,
+    "nov": 11,
+    "noviembre": 11,
+    "dic": 12,
+    "diciem": 12,   # "Diciem." en resúmenes
+    "diciembre": 12,
+}
+
+
+def _parsear_monto_ar(s: str) -> float | None:
+    """
+    Parse monto AR con miles '.' y decimales ',' y posible sufijo '-'.
+    Ej: '16.957,96' o '89.898,08-' o '-$ 36.400,00'
+    """
+    if not s:
+        return None
+    t = str(s).strip()
+    neg = False
+    if t.endswith("-"):
+        neg = True
+        t = t[:-1].strip()
+    t = t.replace("U$S", "").replace("$", "").replace(" ", "")
+    # manejar prefijo - (ej: -$ 36.400,00)
+    if t.startswith("-"):
+        neg = True
+        t = t[1:].strip()
+    # 1.234,56 -> 1234.56
+    t = t.replace(".", "").replace(",", ".")
+    try:
+        val = float(t)
+        return -abs(val) if neg else val
+    except ValueError:
+        return None
+
+
+def importar_debito_pdf(ruta: Path, periodo: str) -> pd.DataFrame:
+    """
+    Importa PDF 'Mi resumen de cuenta' (Santander).
+    Espera sección "Movimientos en pesos" con tabla:
+      Fecha Comprobante Movimiento ... Saldo
+    """
+    texto = _leer_pdf_texto(ruta)
+    lineas = [l.strip() for l in texto.splitlines() if l.strip()]
+
+    # encontrar donde arranca la tabla
+    start = None
+    for i, l in enumerate(lineas):
+        if l.lower().startswith("movimientos en pesos"):
+            start = i
+            break
+    if start is None:
+        return pd.DataFrame()
+
+    movimientos: list[dict] = []
+    fecha_actual: str | None = None
+    desc_parts: list[str] = []
+    monto_actual: float | None = None
+
+    date_re = re.compile(r"^(?P<d>\d{2})/(?P<m>\d{2})/(?P<y>\d{2})\b")
+    money_re = re.compile(r"(?P<sign>-?\$)\s*(?P<num>\d{1,3}(?:\.\d{3})*,\d{2})")
+
+    def flush():
+        nonlocal desc_parts, monto_actual, fecha_actual
+        if fecha_actual and monto_actual is not None and desc_parts:
+            descripcion = " ".join(desc_parts).strip()
+            movimientos.append({
+                "fecha": fecha_actual,
+                "descripcion": descripcion[:500],
+                "monto": monto_actual,
+                "origen": f"debito_pdf:{ruta.name}",
+                "periodo": periodo,
+            })
+        desc_parts = []
+        monto_actual = None
+
+    for l in lineas[start:]:
+        # nueva fila si arranca con fecha dd/mm/yy
+        m = date_re.match(l)
+        if m:
+            flush()
+            d, mo, y = int(m.group("d")), int(m.group("m")), int(m.group("y"))
+            fecha_actual = f"20{y:02d}-{mo:02d}-{d:02d}"
+            # la línea tiene el comienzo del movimiento + posible monto
+            resto = l[m.end():].strip()
+            if resto:
+                desc_parts.append(resto)
+            # monto: tomar el primer $... que aparezca en la línea (suele ser el movimiento, el saldo viene después)
+            mm = money_re.search(l)
+            if mm:
+                raw = f"{mm.group('sign')} {mm.group('num')}"
+                monto_actual = _parsear_monto_ar(raw)
+            continue
+
+        # líneas de continuación: suelen ser parte de la descripción
+        if fecha_actual:
+            # si aparece un monto en continuación y todavía no lo capturamos, usarlo
+            if monto_actual is None:
+                mm = money_re.search(l)
+                if mm:
+                    raw = f"{mm.group('sign')} {mm.group('num')}"
+                    monto_actual = _parsear_monto_ar(raw)
+                    # remover el monto del texto para que no quede duplicado en descripcion
+                    l = money_re.sub("", l).strip()
+            if l:
+                # cortar ruidos frecuentes
+                if l.startswith("-- ") and " of " in l:
+                    continue
+                desc_parts.append(l)
+
+    flush()
+
+    # normalizar: en el PDF los débitos ya vienen con -$; los créditos con $.
+    return pd.DataFrame(movimientos)
+
+
+def importar_credito_pdf(ruta: Path, periodo: str) -> pd.DataFrame:
+    """
+    Importa PDF resumen VISA Santander.
+    Toma consumos (no pagos) y los exporta como montos negativos.
+    """
+    texto = _leer_pdf_texto(ruta)
+    lineas = [l.strip() for l in texto.splitlines() if l.strip()]
+
+    rows: list[dict] = []
+    year: int | None = None
+    month: int | None = None
+
+    # ejemplo:
+    # 26 Enero 05 000001 * AUBASA ... 16.957,96
+    # 08 000001 K AUTOPISTAS ... 6.851,17
+    re_full = re.compile(r"^(?P<yy>\d{2})\s+(?P<mes>[A-Za-z\.]+)\s+(?P<dd>\d{2})\s+(?P<rest>.+)$")
+    re_cont = re.compile(r"^(?P<dd>\d{2})\s+(?P<rest>.+)$")
+    re_amount_tail = re.compile(r"(?P<num>\d{1,3}(?:\.\d{3})*,\d{2}-?)\s*$")
+
+    for l in lineas:
+        low = l.lower()
+        if "total consumos" in low:
+            break
+        if "su pago" in low or "pago en pesos" in low:
+            continue
+        # saltar líneas claramente no-movimientos
+        if low.startswith("santander") or "resumen de cuenta" in low or low.startswith("el presente es copia"):
+            continue
+
+        m = re_full.match(l)
+        if m:
+            year = 2000 + int(m.group("yy"))
+            mes_raw = m.group("mes").lower().replace(".", "")
+            month = _MESES_ES.get(mes_raw)
+            dd = int(m.group("dd"))
+            rest = m.group("rest").strip()
+        else:
+            m2 = re_cont.match(l)
+            if not m2 or year is None or month is None:
+                continue
+            dd = int(m2.group("dd"))
+            rest = m2.group("rest").strip()
+
+        if year is None or month is None:
+            continue
+
+        # monto: último número estilo AR al final de la línea
+        ma = re_amount_tail.search(rest)
+        if not ma:
+            continue
+        monto = _parsear_monto_ar(ma.group("num"))
+        if monto is None:
+            continue
+        # los consumos deben ser gasto (negativo)
+        monto = -abs(monto)
+
+        desc = re_amount_tail.sub("", rest).strip()
+        # limpiar cosas típicas: prefijos con códigos, asteriscos, letras de referencia
+        desc = re.sub(r"^[0-9]{3,}\s+", "", desc).strip()
+        desc = desc.lstrip("*").strip()
+
+        fecha = f"{year:04d}-{month:02d}-{dd:02d}"
+        rows.append({
+            "fecha": fecha,
+            "descripcion": desc[:500],
+            "monto": monto,
+            "origen": f"credito_pdf:{ruta.name}",
+            "periodo": periodo,
+        })
+
+    return pd.DataFrame(rows)
+
+
 def importar_archivo(ruta: Path, periodo: str, debug: bool = False) -> pd.DataFrame:
     """Despacha al importador correcto según el tipo de archivo."""
     tipo = _detectar_tipo_archivo(ruta)
@@ -234,4 +476,8 @@ def importar_archivo(ruta: Path, periodo: str, debug: bool = False) -> pd.DataFr
         return importar_debito(ruta, periodo)
     if tipo == "credito":
         return importar_credito(ruta, periodo, debug=debug)
+    if tipo == "debito_pdf":
+        return importar_debito_pdf(ruta, periodo)
+    if tipo == "credito_pdf":
+        return importar_credito_pdf(ruta, periodo)
     return pd.DataFrame()

@@ -60,6 +60,36 @@ El script procesa **siempre el período más reciente** (la carpeta YYYY-MM con 
 
 ---
 
+## Descarga de extractos (guía rápida)
+
+Este repo no automatiza la descarga: asume que vos bajás los archivos y los dejás en `Gastos/YYYY-MM/`.
+
+- **Mercado Pago (extracto `account_statement`)**
+  - **Objetivo**: generar un Excel con nombre tipo `account_statement-....xlsx` (o que contenga columnas `RELEASE_DATE`, `TRANSACTION_TYPE`, `TRANSACTION_NET_AMOUNT`).
+  - **Pasos (web)**
+    - Entrar a **Cuenta → Tu dinero**
+    - En **Movimientos**, hacer click en **Consultar todos**
+    - Click en **Generar Resumen de cuenta**
+    - En “Tus resúmenes de cuenta”, elegir **Período personalizado** (acá elegís **desde** y **hasta**, hasta 31 días)
+      - Nota: también podés elegir un mes “prearmado” (ej: “Enero 2026”). Es redundante con “Período personalizado”, pero a veces es la forma más directa de llegar al selector correcto.
+    - Elegir **Formato: .xlsx**
+    - Generar y descargar
+  - **Dónde lo pongo**: `Gastos/YYYY-MM/` (ej: `Gastos/2026-01/account_statement-....xlsx`)
+
+- **Cuenta / Débito (Santander)**
+  - **Excel “movimientos”**: si lo podés exportar, dejalo como `movimientos.xlsx`.
+  - **PDF “Mi resumen de cuenta”**: para meses viejos donde el banco no deja exportar a Excel, podés dejar el PDF del resumen en la carpeta mensual y el pipeline lo importa.
+  - **Importante**: el PDF tiene que ser “texto” (seleccionable). Si es un escaneo (imagen), habría que agregar OCR.
+  - **(TODO documentar)**: pasos exactos en Santander Online/APP para bajar `movimientos.xlsx` y/o el PDF del resumen.
+
+- **Tarjeta / Crédito (Santander VISA)**
+  - **PDF “Resumen de cuenta VISA”**: se puede dejar el PDF del resumen en la carpeta mensual y el pipeline lo importa.
+  - **(TODO documentar)**: pasos exactos para descargar resúmenes viejos (PDF) y el último resumen (si Santander permite Excel).
+
+Si encontrás una forma exacta de descarga para cada fuente (pasos/capturas), este README es el lugar ideal para documentarlo.
+
+---
+
 ## Estructura del proyecto
 
 ```
@@ -104,6 +134,30 @@ Si tu banco usa otro formato, ver `docs/MAPEO_COLUMNAS.md` para ajustar el mapeo
 ```bash
 python scripts/debug_categoria.py "descripción del movimiento"
 ```
+
+---
+
+## MVP Web (sin IDE, efímero)
+
+Este repo incluye un MVP web (monolito) pensado para que cualquiera suba archivos, procese un período y vea métricas.
+La sesión es **efímera**: inputs + outputs se borran automáticamente (TTL).
+
+### Correr local
+
+```bash
+pip install -r requirements.txt
+python -m uvicorn mvp_web.main:app --host 127.0.0.1 --port 8000
+```
+
+Abrir `http://127.0.0.1:8000/`.
+
+### Variables de entorno (útiles para deploy)
+
+- `TG_TTL_SECONDS`: TTL de la sesión (default 3600)
+- `TG_MAX_BYTES`: tamaño máximo total de uploads por sesión (default 25MB)
+- `TG_MAX_FILES`: cantidad máxima de archivos por sesión (default 30)
+- `TG_COOKIE_SECURE`: `1` para cookies secure detrás de HTTPS (default `0`)
+- `TG_STORAGE_ROOT`: carpeta base para `storage/` (default `./storage`)
 
 ---
 

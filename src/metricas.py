@@ -20,20 +20,31 @@ def cargar_config() -> dict:
         return json.load(f)
 
 
-def cargar_objetivos() -> dict:
-    """Carga los topes de gasto."""
-    base = Path(__file__).parent.parent / "config"
-    obj_path = base / "objetivos.json"
-    ejemplo_path = base / "objetivos.ejemplo.json"
-    if not obj_path.exists() and ejemplo_path.exists():
-        import shutil
-        shutil.copy(ejemplo_path, obj_path)
-        print("  (Se creó config/objetivos.json desde el ejemplo. Ajustá los montos.)")
-    with open(obj_path, encoding="utf-8") as f:
+def cargar_objetivos(objetivos_path: Path | None = None) -> dict:
+    """
+    Carga los topes de gasto.
+
+    - Por defecto usa `config/objetivos.json` (y lo crea desde el ejemplo si no existe).
+    - Para uso web, se puede pasar un `objetivos_path` específico por sesión.
+    """
+    if objetivos_path is None:
+        base = Path(__file__).parent.parent / "config"
+        objetivos_path = base / "objetivos.json"
+        ejemplo_path = base / "objetivos.ejemplo.json"
+        if not objetivos_path.exists() and ejemplo_path.exists():
+            import shutil
+            shutil.copy(ejemplo_path, objetivos_path)
+            print("  (Se creó config/objetivos.json desde el ejemplo. Ajustá los montos.)")
+    with open(objetivos_path, encoding="utf-8") as f:
         return json.load(f)
 
 
-def calcular_metricas(periodo: str, ruta_categorizado: Path, ruta_salida: Path):
+def calcular_metricas(
+    periodo: str,
+    ruta_categorizado: Path,
+    ruta_salida: Path,
+    objetivos_path: Path | None = None,
+):
     """
     Calcula % de cumplimiento por categoría y total.
     Excluye: ingresos (monto > 0) y pagos de tarjeta.
@@ -44,7 +55,7 @@ def calcular_metricas(periodo: str, ruta_categorizado: Path, ruta_salida: Path):
         return
 
     df = pd.read_excel(archivo)
-    objetivos = cargar_objetivos()
+    objetivos = cargar_objetivos(objetivos_path=objetivos_path)
 
     df_gastos = df.copy()
 

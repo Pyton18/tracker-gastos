@@ -1,0 +1,2 @@
+"""MVP web app package."""
+

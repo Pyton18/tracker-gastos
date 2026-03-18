@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Resultados — Tracker de Gastos</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; max-width: 1100px; }
+      .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin: 16px 0; }
+      .muted { color: #666; font-size: 14px; }
+      .danger { color: #b00020; }
+      table { border-collapse: collapse; width: 100%; }
+      th, td { border-bottom: 1px solid #eee; padding: 8px; text-align: left; font-size: 14px; }
+      a { color: #0b57d0; }
+      button { padding: 10px 14px; border: 0; border-radius: 10px; background: #111; color: #fff; cursor: pointer; }
+      .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+      code { background: #f5f5f5; padding: 2px 6px; border-radius: 6px; }
+    </style>
+  </head>
+  <body>
+    <h2>Resultados</h2>
+    <div class="muted">Run: <code>{{ run_id }}</code></div>
+
+    <div class="card">
+      <div class="row">
+        <a href="/">← Volver</a>
+        <a href="/categorias">Editar categorías</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Estado</h3>
+      <div id="statusLine" class="muted">Cargando...</div>
+      <div id="errorLine" class="danger"></div>
+    </div>
+
+    <div class="card" id="outputsCard" style="display:none">
+      <h3>Descargas</h3>
+      <div class="row">
+        <a id="dlE" href="#">Estandarizado</a>
+        <a id="dlC" href="#">Categorizado</a>
+        <a id="dlM" href="#">Métricas</a>
+      </div>
+    </div>
+
+    <div class="card" id="metricasCard" style="display:none">
+      <h3>Métricas</h3>
+      <table id="metricasTable">
+        <thead><tr><th>Categoría</th><th>Tope</th><th>Gastado</th><th>% Cumplimiento</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="card" id="sinAsignarCard" style="display:none">
+      <h3>Sin asignar</h3>
+      <div class="muted" id="sinAsignarCount"></div>
+      <ul id="sinAsignarList"></ul>
+    </div>
+
+    <script>
+      const runId = "{{ run_id }}";
+      const statusLine = document.getElementById('statusLine');
+      const errorLine = document.getElementById('errorLine');
+
+      const outputsCard = document.getElementById('outputsCard');
+      const metricasCard = document.getElementById('metricasCard');
+      const sinAsignarCard = document.getElementById('sinAsignarCard');
+
+      function setDownloads(periodo) {
+        document.getElementById('dlE').href = `/api/outputs/${periodo}/estandarizado`;
+        document.getElementById('dlC').href = `/api/outputs/${periodo}/categorizado`;
+        document.getElementById('dlM').href = `/api/outputs/${periodo}/metricas`;
+      }
+
+      function renderMetricas(rows) {
+        const tbody = document.querySelector('#metricasTable tbody');
+        tbody.innerHTML = '';
+        for (const r of rows) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${r["Categoria"] ?? ""}</td><td>${r["Tope"] ?? ""}</td><td>${r["Gastado"] ?? ""}</td><td>${r["% Cumplimiento"] ?? ""}</td>`;
+          tbody.appendChild(tr);
+        }
+      }
+
+      function renderSinAsignar(items) {
+        const ul = document.getElementById('sinAsignarList');
+        ul.innerHTML = '';
+        for (const s of items) {
+          const li = document.createElement('li');
+          li.textContent = s;
+          ul.appendChild(li);
+        }
+      }
+
+      async function poll() {
+        const res = await fetch(`/api/runs/${runId}`);
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          statusLine.textContent = 'Error cargando estado';
+          errorLine.textContent = data.detail || 'Run no encontrado';
+          return;
+        }
+        statusLine.textContent = `Estado: ${data.status || 'unknown'}`;
+
+        if (data.status === 'error') {
+          errorLine.textContent = data.error || 'Error';
+          return;
+        }
+
+        if (data.status === 'done' && data.summary) {
+          const periodo = data.periodo || data.summary.periodo;
+          setDownloads(periodo);
+          outputsCard.style.display = '';
+
+          const metricas = data.summary.metricas || [];
+          renderMetricas(metricas);
+          metricasCard.style.display = '';
+
+          const sinAsignar = data.summary.sin_asignar || [];
+          document.getElementById('sinAsignarCount').textContent = `Mostrando ${sinAsignar.length} (máx 250)`;
+          renderSinAsignar(sinAsignar);
+          sinAsignarCard.style.display = '';
+          return;
+        }
+
+        setTimeout(poll, 800);
+      }
+
+      poll();
+    </script>
+  </body>
+</html>
+

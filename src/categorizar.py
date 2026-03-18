@@ -21,16 +21,22 @@ def cargar_config() -> dict:
         return json.load(f)
 
 
-def cargar_categorias() -> dict:
-    """Carga las reglas de categorización."""
-    base = Path(__file__).parent.parent / "config"
-    cat_path = base / "categorias.json"
-    ejemplo_path = base / "categorias.ejemplo.json"
-    if not cat_path.exists() and ejemplo_path.exists():
-        import shutil
-        shutil.copy(ejemplo_path, cat_path)
-        print("  (Se creó config/categorias.json desde el ejemplo. Personalizalo.)")
-    with open(cat_path, encoding="utf-8") as f:
+def cargar_categorias(categorias_path: Path | None = None) -> dict:
+    """
+    Carga las reglas de categorización.
+
+    - Por defecto usa `config/categorias.json` (y lo crea desde el ejemplo si no existe).
+    - Para uso web, se puede pasar un `categorias_path` específico por sesión.
+    """
+    if categorias_path is None:
+        base = Path(__file__).parent.parent / "config"
+        categorias_path = base / "categorias.json"
+        ejemplo_path = base / "categorias.ejemplo.json"
+        if not categorias_path.exists() and ejemplo_path.exists():
+            import shutil
+            shutil.copy(ejemplo_path, categorias_path)
+            print("  (Se creó config/categorias.json desde el ejemplo. Personalizalo.)")
+    with open(categorias_path, encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -57,7 +63,13 @@ def categorizar_descripcion(descripcion: str, categorias: dict) -> str:
     return fallback
 
 
-def categorizar_periodo(periodo: str, ruta_estandarizado: Path, ruta_salida: Path, mostrar_sin_asignar: bool = False):
+def categorizar_periodo(
+    periodo: str,
+    ruta_estandarizado: Path,
+    ruta_salida: Path,
+    mostrar_sin_asignar: bool = False,
+    categorias_path: Path | None = None,
+):
     """
     Procesa un archivo estandarizado y genera el categorizado.
     """
@@ -67,7 +79,7 @@ def categorizar_periodo(periodo: str, ruta_estandarizado: Path, ruta_salida: Pat
         return
 
     df = pd.read_excel(archivo)
-    categorias = cargar_categorias()
+    categorias = cargar_categorias(categorias_path=categorias_path)
 
     df["categoria"] = df["descripcion"].apply(lambda d: categorizar_descripcion(d, categorias))
 

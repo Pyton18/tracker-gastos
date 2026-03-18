@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Tracker de Gastos — MVP</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; max-width: 960px; }
+      .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin: 16px 0; }
+      .muted { color: #666; font-size: 14px; }
+      input[type="text"] { padding: 8px; border: 1px solid #ccc; border-radius: 8px; width: 160px; }
+      button { padding: 10px 14px; border: 0; border-radius: 10px; background: #111; color: #fff; cursor: pointer; }
+      button.secondary { background: #f2f2f2; color: #111; }
+      ul { margin: 8px 0 0 18px; }
+      .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+      .danger { color: #b00020; }
+    </style>
+  </head>
+  <body>
+    <h2>Tracker de Gastos (MVP)</h2>
+    <div class="muted">Sesión: {{ session_id_short }}… (se borra automáticamente en 1 hora)</div>
+
+    <div class="card">
+      <h3>1) Subir archivos</h3>
+      <div class="muted">Subí tus archivos (xlsx/pdf). Quedan solo en tu sesión.</div>
+      <form id="uploadForm">
+        <input id="files" name="files" type="file" multiple />
+        <button type="submit">Subir</button>
+        <span id="uploadStatus" class="muted"></span>
+      </form>
+      {% if files and files|length > 0 %}
+        <div class="muted">Archivos en esta sesión:</div>
+        <ul>
+          {% for f in files %}
+            <li>{{ f }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h3>2) Procesar</h3>
+      <div class="row">
+        <label>Período (YYYY-MM)</label>
+        <input id="periodo" type="text" placeholder="2026-01" />
+        <button id="processBtn">Procesar</button>
+        <span id="processStatus" class="muted"></span>
+      </div>
+      <div class="muted" style="margin-top:8px">
+        Consejo: si querés ajustar reglas, usá <a href="/categorias">Categorías</a> antes de reprocesar.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Categorías</h3>
+      <a href="/categorias">Editar categorías (keywords/regex)</a>
+    </div>
+
+    <div class="card">
+      <h3>Privacidad</h3>
+      <div class="muted">
+        Todo (inputs + outputs) se borra automáticamente a la hora.
+      </div>
+      <form action="/api/session/delete" method="post" onsubmit="return confirm('¿Eliminar tus datos ahora?');">
+        <button class="secondary" type="submit">Eliminar mis datos ahora</button>
+      </form>
+    </div>
+
+    <script>
+      const uploadForm = document.getElementById('uploadForm');
+      const uploadStatus = document.getElementById('uploadStatus');
+      uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const files = document.getElementById('files').files;
+        if (!files || files.length === 0) return;
+        uploadStatus.textContent = 'Subiendo...';
+        const fd = new FormData();
+        for (const f of files) fd.append('files', f);
+        const res = await fetch('/api/uploads', { method: 'POST', body: fd });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          uploadStatus.textContent = 'Error: ' + (data.detail || 'subida falló');
+          uploadStatus.classList.add('danger');
+          return;
+        }
+        uploadStatus.textContent = 'OK. Recargá para ver la lista.';
+        setTimeout(() => location.reload(), 400);
+      });
+
+      document.getElementById('processBtn').addEventListener('click', async () => {
+        const periodo = document.getElementById('periodo').value.trim();
+        const processStatus = document.getElementById('processStatus');
+        processStatus.textContent = 'Encolando...';
+        const fd = new FormData();
+        fd.append('periodo', periodo);
+        const res = await fetch('/api/process', { method: 'POST', body: fd });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          processStatus.textContent = 'Error: ' + (data.detail || 'no se pudo procesar');
+          processStatus.classList.add('danger');
+          return;
+        }
+        processStatus.textContent = 'Procesando...';
+        window.location.href = '/resultados/' + data.run_id;
+      });
+    </script>
+  </body>
+</html>
+
