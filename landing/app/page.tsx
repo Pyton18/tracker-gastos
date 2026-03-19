@@ -6,39 +6,43 @@ export default function Page() {
       <div className="nav">
         <div className="brand">
           <div className="logo" />
-          <div>Tracker de Gastos</div>
-          <div className="pill">gratis · privado · 1h</div>
+          <div>Spend Tracker</div>
+          <div className="pill">free · private · 1h</div>
         </div>
-        <div className="pill">MVP en construcción</div>
+        <div className="pill">Private beta</div>
       </div>
 
       <div className="hero">
         <div className="panel">
-          <h1 className="h1">Subí tus extractos y mirá tus métricas en 1 minuto.</h1>
+          <h1 className="h1">Upload your statements and see your metrics in 1 minute.</h1>
           <p className="lead">
-            Una herramienta simple para juntar movimientos (Mercado Pago / banco / tarjeta), asignar categorías por reglas y
-            calcular tu cumplimiento de presupuesto. Tus archivos se procesan en una sesión efímera y se eliminan automáticamente.
+            A simple way to consolidate monthly transactions (wallet / bank / card), auto‑categorize them with rules, and track
+            budget progress. Your files are processed in an ephemeral session and deleted automatically.
           </p>
 
           <div className="ctaRow">
             <Link className="btn btnPrimary" href="/intent">
-              Quiero probarlo
+              Try it
             </Link>
-            <a className="btn btnGhost" href="https://github.com/" target="_blank" rel="noreferrer">
-              Ver el repo (pronto)
+            <a className="btn btnGhost" href="https://github.com/Pyton18/tracker-gastos" target="_blank" rel="noreferrer">
+              GitHub
             </a>
           </div>
 
           <div className="grid2">
             <div className="item">
-              <p className="itemTitle">Privacidad por defecto</p>
-              <p className="itemText">Sesión sin cuenta. Retención 1 hora. Botón para borrar todo al instante.</p>
+              <p className="itemTitle">Privacy by default</p>
+              <p className="itemText">No account required. 1‑hour retention. One click to delete everything instantly.</p>
             </div>
             <div className="item">
-              <p className="itemTitle">Reglas editables</p>
-              <p className="itemText">Keywords y regex por categoría. Reprocesás y listo.</p>
+              <p className="itemTitle">Editable rules</p>
+              <p className="itemText">Keywords and patterns per category. Adjust and re‑run in seconds.</p>
             </div>
           </div>
+          <p className="fineprint">
+            Currently supports: <strong>Mercado Pago</strong> statements and <strong>Santander</strong> account / Visa PDFs (Argentina).
+            More sources coming.
+          </p>
         </div>
 
         <div className="panel">
@@ -51,32 +55,34 @@ export default function Page() {
               </div>
               <div className="mockTitle">Preview</div>
             </div>
-            <div className="bar">
-              <div />
+            <div className="flow" aria-hidden="true">
+              <div className="chip chipPdf">PDF</div>
+              <div className="chip chipXls">XLSX</div>
+              <div className="chip chipXls">XLSX</div>
+              <div className="arrow">→</div>
+              <div className="bucket" title="Upload">
+                <div className="bucketTop" />
+              </div>
+              <div className="arrow">→</div>
+              <div className="bars">
+                <div className="bar"><div /></div>
+                <div className="bar bar2"><div /></div>
+                <div className="bar bar3"><div /></div>
+              </div>
             </div>
             <div className="kpiRow">
               <div className="kpi">
-                <div className="kpiLabel">Total mes</div>
-                <div className="kpiValue">$ 1.757.310</div>
+                <div className="kpiLabel">Monthly total</div>
+                <div className="kpiValue">$ 1,757,310</div>
               </div>
               <div className="kpi">
-                <div className="kpiLabel">Cumplimiento</div>
+                <div className="kpiLabel">Budget usage</div>
                 <div className="kpiValue">76%</div>
               </div>
             </div>
-            <div className="footer">
-              Esta es una maqueta para comunicar la idea. El MVP funcional corre aparte en backend Python.
-            </div>
+            <div className="footer">Drag & drop your files, get a clear monthly view.</div>
           </div>
         </div>
-      </div>
-
-      <div className="panel" style={{ marginTop: 18 }}>
-        <h3 style={{ margin: 0 }}>¿Qué es “Quiero probarlo”?</h3>
-        <p className="lead" style={{ marginTop: 10 }}>
-          Hoy te va a aparecer un mensaje de “estoy haciendo una mejora de último minuto”. Ese click me ayuda a medir interés
-          mientras termino de pulir la experiencia.
-        </p>
       </div>
     </div>
   );

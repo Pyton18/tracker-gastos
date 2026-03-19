@@ -3,13 +3,13 @@ import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Tracker de Gastos",
-  description: "Subí tus extractos, categorizá y mirá métricas en 1 minuto."
+  title: "Spend Tracker",
+  description: "Upload your statements and see your metrics in 1 minute."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es">
+    <html lang="en">
       <body>
         {children}
         <Analytics />

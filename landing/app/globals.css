@@ -187,3 +187,67 @@ a { color: inherit; text-decoration: none; }
   line-height: 1.5;
 }
 
+.fineprint {
+  margin: 14px 0 0;
+  color: rgba(255, 255, 255, 0.60);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.flow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+}
+
+.chip {
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.22);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  transform: translateY(0);
+  animation: float 3.2s ease-in-out infinite;
+}
+.chipPdf { box-shadow: 0 10px 25px rgba(59,130,246,0.12); }
+.chipXls { box-shadow: 0 10px 25px rgba(34,197,94,0.10); }
+.chip:nth-child(2) { animation-delay: 0.35s; }
+.chip:nth-child(3) { animation-delay: 0.7s; }
+
+.arrow { color: rgba(255,255,255,0.55); font-weight: 800; }
+
+.bucket {
+  width: 46px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.26);
+  position: relative;
+  overflow: hidden;
+}
+.bucketTop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background: linear-gradient(90deg, rgba(124,58,237,1), rgba(34,197,94,1));
+  opacity: 0.9;
+}
+
+.bars { flex: 1; min-width: 180px; }
+.bar2 > div { width: 44%; opacity: 0.95; }
+.bar3 > div { width: 82%; opacity: 0.9; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
