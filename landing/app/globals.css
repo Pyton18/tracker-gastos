@@ -1,11 +1,11 @@
 :root {
-  --bg: #07090f;
-  --panel: rgba(255, 255, 255, 0.06);
-  --border: rgba(255, 255, 255, 0.12);
-  --text: rgba(255, 255, 255, 0.92);
-  --muted: rgba(255, 255, 255, 0.7);
+  --bg: #f7f7fb;
+  --panel: rgba(255, 255, 255, 0.78);
+  --border: rgba(10, 10, 30, 0.10);
+  --text: rgba(10, 10, 30, 0.92);
+  --muted: rgba(10, 10, 30, 0.62);
   --accent: #7c3aed;
-  --accent2: #22c55e;
+  --accent2: #16a34a;
 }
 
 * { box-sizing: border-box; }
@@ -14,9 +14,9 @@ body {
   margin: 0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   background:
-    radial-gradient(1000px 500px at 20% 20%, rgba(124, 58, 237, 0.24), transparent 55%),
-    radial-gradient(900px 450px at 80% 30%, rgba(34, 197, 94, 0.18), transparent 55%),
-    radial-gradient(1200px 650px at 55% 80%, rgba(59, 130, 246, 0.18), transparent 60%),
+    radial-gradient(1000px 520px at 15% 10%, rgba(124, 58, 237, 0.12), transparent 55%),
+    radial-gradient(900px 480px at 85% 20%, rgba(34, 197, 94, 0.10), transparent 55%),
+    radial-gradient(1200px 700px at 55% 90%, rgba(59, 130, 246, 0.10), transparent 60%),
     var(--bg);
   color: var(--text);
 }
@@ -37,7 +37,7 @@ a { color: inherit; text-decoration: none; }
   padding: 14px 16px;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: rgba(0,0,0,0.20);
+  background: rgba(255,255,255,0.55);
   backdrop-filter: blur(10px);
 }
 
@@ -53,7 +53,7 @@ a { color: inherit; text-decoration: none; }
   height: 34px;
   border-radius: 10px;
   background: linear-gradient(135deg, rgba(124,58,237,1), rgba(34,197,94,1));
-  box-shadow: 0 10px 30px rgba(124,58,237,0.25);
+  box-shadow: 0 10px 30px rgba(124,58,237,0.18);
 }
 
 .pill {
@@ -122,7 +122,7 @@ a { color: inherit; text-decoration: none; }
   border: 0;
 }
 .btnGhost {
-  background: rgba(0,0,0,0.20);
+  background: rgba(255,255,255,0.55);
 }
 
 .grid2 {
@@ -139,7 +139,7 @@ a { color: inherit; text-decoration: none; }
   padding: 14px;
   border-radius: 14px;
   border: 1px solid var(--border);
-  background: rgba(0,0,0,0.18);
+  background: rgba(255,255,255,0.55);
 }
 .itemTitle {
   font-weight: 650;
@@ -151,7 +151,7 @@ a { color: inherit; text-decoration: none; }
   padding: 18px;
   border-radius: 18px;
   border: 1px solid var(--border);
-  background: rgba(0,0,0,0.25);
+  background: rgba(255,255,255,0.55);
 }
 .mockHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .dotRow { display: flex; gap: 6px; }
@@ -160,7 +160,7 @@ a { color: inherit; text-decoration: none; }
 .bar {
   height: 10px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.10);
+  background: rgba(10,10,30,0.08);
   overflow: hidden;
   margin: 8px 0;
 }
@@ -174,7 +174,7 @@ a { color: inherit; text-decoration: none; }
 .kpi {
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.78);
   padding: 12px;
 }
 .kpiLabel { font-size: 12px; color: var(--muted); }
@@ -189,12 +189,12 @@ a { color: inherit; text-decoration: none; }
 
 .fineprint {
   margin: 14px 0 0;
-  color: rgba(255, 255, 255, 0.60);
+  color: rgba(10, 10, 30, 0.55);
   font-size: 13px;
   line-height: 1.5;
 }
 
-.flow {
+.simpleFlow {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -202,52 +202,37 @@ a { color: inherit; text-decoration: none; }
   padding: 12px;
   border-radius: 16px;
   border: 1px solid var(--border);
-  background: rgba(255,255,255,0.04);
+  background: rgba(255,255,255,0.78);
 }
 
-.chip {
-  padding: 8px 10px;
-  border-radius: 999px;
+.fileIcon {
+  padding: 10px 12px;
+  border-radius: 14px;
   border: 1px solid var(--border);
-  background: rgba(0,0,0,0.22);
-  font-weight: 700;
+  background: rgba(255,255,255,0.85);
+  font-weight: 800;
   font-size: 12px;
-  letter-spacing: 0.3px;
-  transform: translateY(0);
-  animation: float 3.2s ease-in-out infinite;
+  letter-spacing: 0.4px;
 }
-.chipPdf { box-shadow: 0 10px 25px rgba(59,130,246,0.12); }
-.chipXls { box-shadow: 0 10px 25px rgba(34,197,94,0.10); }
-.chip:nth-child(2) { animation-delay: 0.35s; }
-.chip:nth-child(3) { animation-delay: 0.7s; }
+.fileIcon.pdf { border-color: rgba(59,130,246,0.25); }
+.fileIcon.xlsx { border-color: rgba(34,197,94,0.25); }
 
 .arrow { color: rgba(255,255,255,0.55); font-weight: 800; }
 
-.bucket {
+.arrow { color: rgba(10,10,30,0.45); font-weight: 800; }
+
+.factory {
   width: 46px;
-  height: 38px;
-  border-radius: 12px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
   border: 1px solid var(--border);
-  background: rgba(0,0,0,0.26);
-  position: relative;
-  overflow: hidden;
-}
-.bucketTop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 10px;
-  background: linear-gradient(90deg, rgba(124,58,237,1), rgba(34,197,94,1));
-  opacity: 0.9;
+  background: rgba(255,255,255,0.85);
+  font-size: 20px;
 }
 
 .bars { flex: 1; min-width: 180px; }
 .bar2 > div { width: 44%; opacity: 0.95; }
 .bar3 > div { width: 82%; opacity: 0.9; }
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
 

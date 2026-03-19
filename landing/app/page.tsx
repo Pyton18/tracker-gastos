@@ -55,13 +55,13 @@ export default function Page() {
               </div>
               <div className="mockTitle">Preview</div>
             </div>
-            <div className="flow" aria-hidden="true">
-              <div className="chip chipPdf">PDF</div>
-              <div className="chip chipXls">XLSX</div>
-              <div className="chip chipXls">XLSX</div>
+            <div className="simpleFlow" aria-hidden="true">
+              <div className="fileIcon pdf">PDF</div>
               <div className="arrow">→</div>
-              <div className="bucket" title="Upload">
-                <div className="bucketTop" />
+              <div className="fileIcon xlsx">XLSX</div>
+              <div className="arrow">→</div>
+              <div className="factory" title="Process">
+                🏭
               </div>
               <div className="arrow">→</div>
               <div className="bars">

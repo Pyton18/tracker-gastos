@@ -1,6 +1,7 @@
 # Datos personales (extractos bancarios, outputs)
 Gastos/
 data/
+storage/
 
 # Python
 __pycache__/
@@ -24,3 +25,12 @@ Thumbs.db
 # Config con datos personales (nombres, montos). Usar .ejemplo.json como base.
 config/categorias.json
 config/objetivos.json
+
+# Node / Next (landing)
+landing/node_modules/
+landing/.next/
+landing/out/
+landing/.vercel/
+landing/.turbo/
+landing/next-env.d.ts
+landing/tsconfig.tsbuildinfo
