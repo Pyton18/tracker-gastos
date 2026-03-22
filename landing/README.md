@@ -2,10 +2,17 @@
 
 Esta carpeta es una landing “linda” para compartir en LinkedIn.
 
-### Medir clicks (gratis)
+### Botón “Try it”
 
-En lugar de eventos custom (que suelen requerir plan pago), el botón “Quiero probarlo” navega a `/intent`.
-Con **Vercel Web Analytics** podés mirar cuántas pageviews tuvo esa ruta y usarlo como proxy de clicks.
+Por defecto abre el **API en Render**: `https://tracker-gastos-api.onrender.com` (nueva pestaña).
+
+Para cambiar la URL sin tocar código, en Vercel → Project → **Settings → Environment Variables**:
+
+- `NEXT_PUBLIC_MVP_API_URL` = tu URL del API
+
+### Analytics
+
+Podés seguir usando **Web Analytics** para pageviews del home. La ruta `/intent` ya no es el destino del CTA principal (quedó como página opcional).
 
 ### Correr local
 

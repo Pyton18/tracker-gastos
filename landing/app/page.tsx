@@ -1,4 +1,6 @@
-import Link from "next/link";
+/** Live API (Render). Override in Vercel: NEXT_PUBLIC_MVP_API_URL */
+const MVP_API_URL =
+  process.env.NEXT_PUBLIC_MVP_API_URL ?? "https://tracker-gastos-api.onrender.com";
 
 export default function Page() {
   return (
@@ -21,9 +23,9 @@ export default function Page() {
           </p>
 
           <div className="ctaRow">
-            <Link className="btn btnPrimary" href="/intent">
+            <a className="btn btnPrimary" href={MVP_API_URL} target="_blank" rel="noopener noreferrer">
               Try it
-            </Link>
+            </a>
             <a className="btn btnGhost" href="https://github.com/Pyton18/tracker-gastos" target="_blank" rel="noreferrer">
               GitHub
             </a>
