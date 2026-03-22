@@ -18,9 +18,8 @@ COPY config/ config/
 COPY src/ src/
 COPY mvp_web/ mvp_web/
 
-# Writable storage for ephemeral sessions (override with TG_STORAGE_ROOT in prod)
-ENV TG_STORAGE_ROOT=/data/storage
-RUN mkdir -p /data/storage
+# Ephemeral session files — use /tmp (always writable on Linux; /data can be RO or missing on some hosts)
+ENV TG_STORAGE_ROOT=/tmp/tg-storage
 
 EXPOSE 8000
 

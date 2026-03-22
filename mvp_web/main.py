@@ -8,7 +8,7 @@ import time
 from pathlib import Path
 
 from fastapi import Cookie, FastAPI, File, Form, HTTPException, Request, Response, UploadFile
-from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
 from .executor import InProcessExecutor
@@ -34,19 +34,31 @@ def health():
     return {"ok": True}
 
 
-def _get_or_create_session_id(response: Response, session_id: str | None) -> str:
-    if session_id:
-        return session_id
-    sid = new_session_id()
-    # httpOnly cookie for privacy; sameSite Lax is ok for MVP
+def _set_session_cookie(response: Response, sid: str) -> None:
+    """httpOnly cookie for privacy; SameSite Lax is ok for MVP."""
     response.set_cookie(
         key=SESSION_COOKIE,
         value=sid,
         httponly=True,
         samesite="lax",
-        secure=COOKIE_SECURE,  # set true behind HTTPS proxy in deploy
+        secure=COOKIE_SECURE,  # set TG_COOKIE_SECURE=1 behind HTTPS in production
         max_age=TTL_SECONDS,
     )
+
+
+def _session_id_from_cookie_or_new(tg_session: str | None) -> tuple[str, bool]:
+    """Returns (session_id, needs_set_cookie)."""
+    if tg_session:
+        return tg_session, False
+    return new_session_id(), True
+
+
+def _get_or_create_session_id(response: Response, session_id: str | None) -> str:
+    """For JSON/API routes that inject Response — sets cookie on the injected Response."""
+    if session_id:
+        return session_id
+    sid = new_session_id()
+    _set_session_cookie(response, sid)
     return sid
 
 
@@ -81,21 +93,30 @@ def _start_cleanup_loop():
     t.start()
 
 
+@app.head("/")
+def head_root():
+    """Render and some probes send HEAD; without this, GET-only routes return 405."""
+    return Response(status_code=200)
+
+
 @app.get("/", response_class=HTMLResponse)
-def home(request: Request, response: Response, tg_session: str | None = Cookie(default=None)):
-    sid = _get_or_create_session_id(response, tg_session)
+def home(request: Request, tg_session: str | None = Cookie(default=None)):
+    sid, need_cookie = _session_id_from_cookie_or_new(tg_session)
     sp = ensure_session(sid)
     _init_session_files(sp)
     files = sorted([p.name for p in sp.inputs.glob("*") if p.is_file()])
-    return templates.TemplateResponse(
-        "home.html",
-        {
+    resp = templates.TemplateResponse(
+        request=request,
+        name="home.html",
+        context={
             "request": request,
             "session_id_short": sid[:8],
             "files": files,
         },
-        response=response,
     )
+    if need_cookie:
+        _set_session_cookie(resp, sid)
+    return resp
 
 
 @app.post("/api/uploads")
@@ -157,35 +178,39 @@ def run_status(
 @app.get("/resultados/{run_id}", response_class=HTMLResponse)
 def resultados_page(
     request: Request,
-    response: Response,
     run_id: str,
     tg_session: str | None = Cookie(default=None),
 ):
-    sid = _get_or_create_session_id(response, tg_session)
+    sid, need_cookie = _session_id_from_cookie_or_new(tg_session)
     sp = ensure_session(sid)
     state = read_run_state(sp, run_id) or {"run_id": run_id, "status": "unknown"}
-    return templates.TemplateResponse(
-        "resultados.html",
-        {"request": request, "run_id": run_id, "state": state},
-        response=response,
+    resp = templates.TemplateResponse(
+        request=request,
+        name="resultados.html",
+        context={"request": request, "run_id": run_id, "state": state},
     )
+    if need_cookie:
+        _set_session_cookie(resp, sid)
+    return resp
 
 
 @app.get("/categorias", response_class=HTMLResponse)
 def categorias_page(
     request: Request,
-    response: Response,
     tg_session: str | None = Cookie(default=None),
 ):
-    sid = _get_or_create_session_id(response, tg_session)
+    sid, need_cookie = _session_id_from_cookie_or_new(tg_session)
     sp = ensure_session(sid)
     _init_session_files(sp)
     raw = sp.categorias_path.read_text(encoding="utf-8")
-    return templates.TemplateResponse(
-        "categorias.html",
-        {"request": request, "raw_json": raw},
-        response=response,
+    resp = templates.TemplateResponse(
+        request=request,
+        name="categorias.html",
+        context={"request": request, "raw_json": raw},
     )
+    if need_cookie:
+        _set_session_cookie(resp, sid)
+    return resp
 
 
 @app.post("/categorias")
@@ -199,12 +224,13 @@ def save_categorias(
     sp = ensure_session(sid)
     ok, errors = validate_and_write_categorias_json(sp.categorias_path, raw_json)
     if not ok:
-        return templates.TemplateResponse(
-            "categorias.html",
-            {"request": request, "raw_json": raw_json, "errors": errors},
+        resp = templates.TemplateResponse(
+            request=request,
+            name="categorias.html",
+            context={"request": request, "raw_json": raw_json, "errors": errors},
             status_code=400,
-            response=response,
         )
+        return resp
     return RedirectResponse(url="/categorias", status_code=303)
 
 
