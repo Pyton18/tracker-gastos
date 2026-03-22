@@ -151,6 +151,10 @@ python -m uvicorn mvp_web.main:app --host 127.0.0.1 --port 8000
 
 Abrir `http://127.0.0.1:8000/`.
 
+En el MVP web, el **período (YYYY-MM)** se **infiere** desde la fecha más reciente de los movimientos importados (no hace falta escribirlo). Opcionalmente podés fijar un período en la UI avanzada.
+
+Reglas de categorías genéricas: `config/categorias.ejemplo.json`. Para reglas personales en tu PC: ver **`docs/CATEGORIAS_PERSONALES.md`**.
+
 ### Variables de entorno (útiles para deploy)
 
 - `TG_TTL_SECONDS`: TTL de la sesión (default 3600)

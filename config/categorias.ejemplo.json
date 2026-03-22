@@ -1,5 +1,5 @@
 {
-  "descripcion": "keywords: subcadenas cortas (case insensitive). Si alguna está en la descripción, matchea. Orden importa: primera coincidencia gana.",
+  "descripcion": "Keywords: substrings (case insensitive). First matching category wins. Edit in the web app under Advanced, or copy this file to config/categorias.json locally (gitignored) for your personal rules.",
   "categorias": [
     {
       "nombre": "Sueldo",
@@ -56,8 +56,6 @@
       "keywords": [
         "aubasa",
         "autopista",
-        "corredores viale",
-        "autopistas urban",
         "shell",
         "ypf",
         "est de servicio",
@@ -70,9 +68,7 @@
         "payu",
         "taxi",
         "zurich",
-        "seguro",
-        "sancor",
-        "villar sa"
+        "seguro"
       ]
     },
     {
@@ -80,16 +76,13 @@
       "keywords": [
         "coto",
         "dia tienda",
-        "super chapa",
-        "chapa",
         "carrefour",
         "jumbo",
         "disco",
         "supermercado",
         "mercadolibre",
         "delta venticuatro",
-        "NOMBRE_PERSONA_3",
-        "bettercatering"
+        "NOMBRE_PERSONA_3"
       ]
     },
     {
@@ -105,8 +98,7 @@
       "nombre": "Educación",
       "keywords": [
         "udemy",
-        "edutopia",
-        "centrodeelear"
+        "edutopia"
       ]
     },
     {
@@ -114,9 +106,6 @@
       "keywords": [
         "adidas",
         "salomon",
-        "centrodeelear",
-        "kiddo",
-        "bettercatering",
         "cafeteria",
         "restaurante",
         "pedidos ya",
@@ -125,24 +114,7 @@
         "netflix",
         "spotify",
         "youtube",
-        "photostore",
-        "cristobal colon",
-        "deheza pinamar",
-        "dontoto",
-        "hapsa",
-        "jeronimo",
-        "makena",
-        "open25",
-        "skarte",
-        "umano",
-        "ventinewyearu",
-        "paper u",
-        "atreuco",
-        "bnn costanera",
-        "transferencia inmediata",
-        "transferencias inmediatas",
-        "transferencia realizada",
-        "transferencia enviada"
+        "open25"
       ]
     },
     {

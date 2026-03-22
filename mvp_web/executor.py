@@ -22,11 +22,11 @@ class InProcessExecutor:
     def __init__(self):
         self._lock = threading.Lock()
 
-    def submit(self, sp: SessionPaths, periodo: str) -> SubmitResult:
+    def submit(self, sp: SessionPaths, periodo: str | None) -> SubmitResult:
         run_id = new_run_id()
         state = {
             "run_id": run_id,
-            "periodo": periodo,
+            "periodo": periodo or "auto",
             "status": "queued",
             "created_at": int(time.time()),
         }
@@ -36,10 +36,10 @@ class InProcessExecutor:
         t.start()
         return SubmitResult(run_id=run_id)
 
-    def _run(self, sp: SessionPaths, run_id: str, periodo: str) -> None:
+    def _run(self, sp: SessionPaths, run_id: str, periodo: str | None) -> None:
         state = {
             "run_id": run_id,
-            "periodo": periodo,
+            "periodo": periodo or "auto",
             "status": "running",
             "started_at": int(time.time()),
         }
@@ -52,11 +52,13 @@ class InProcessExecutor:
                 categorias_path=sp.categorias_path,
                 objetivos_path=sp.objetivos_path,
             )
+            final_periodo = summary.get("periodo") if isinstance(summary, dict) else None
             state.update(
                 {
                     "status": "done",
                     "finished_at": int(time.time()),
                     "summary": summary,
+                    "periodo": final_periodo or state.get("periodo"),
                 }
             )
             write_run_state(sp, run_id, state)

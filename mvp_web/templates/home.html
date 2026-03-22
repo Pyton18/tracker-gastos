@@ -3,26 +3,27 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Tracker de Gastos — MVP</title>
+    <title>Spend Tracker — MVP</title>
     <style>
       body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; max-width: 960px; }
       .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin: 16px 0; }
       .muted { color: #666; font-size: 14px; }
-      input[type="text"] { padding: 8px; border: 1px solid #ccc; border-radius: 8px; width: 160px; }
+      input[type="text"] { padding: 8px; border: 1px solid #ccc; border-radius: 8px; width: 140px; }
       button { padding: 10px 14px; border: 0; border-radius: 10px; background: #111; color: #fff; cursor: pointer; }
       button.secondary { background: #f2f2f2; color: #111; }
       ul { margin: 8px 0 0 18px; }
       .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
       .danger { color: #b00020; }
+      details { margin-top: 10px; }
     </style>
   </head>
   <body>
-    <h2>Tracker de Gastos (MVP)</h2>
-    <div class="muted">Sesión: {{ session_id_short }}… (se borra automáticamente en 1 hora)</div>
+    <h2>Spend Tracker (MVP)</h2>
+    <div class="muted">Sesión: {{ session_id_short }}… (se borra en 1 hora)</div>
 
     <div class="card">
       <h3>1) Subir archivos</h3>
-      <div class="muted">Subí tus archivos (xlsx/pdf). Quedan solo en tu sesión.</div>
+      <div class="muted">Mercado Pago (xlsx), banco / Santander (xlsx o PDF), tarjeta Visa (xlsx o PDF).</div>
       <form id="uploadForm">
         <input id="files" name="files" type="file" multiple />
         <button type="submit">Subir</button>
@@ -40,27 +41,27 @@
 
     <div class="card">
       <h3>2) Procesar</h3>
+      <p class="muted">El período (mes) se calcula solo según las <strong>fechas de los movimientos</strong> (se usa el mes de la fecha más reciente). No hace falta escribir YYYY-MM salvo que quieras forzarlo.</p>
       <div class="row">
-        <label>Período (YYYY-MM)</label>
-        <input id="periodo" type="text" placeholder="2026-01" />
-        <button id="processBtn">Procesar</button>
+        <button id="processBtn" type="button">Procesar</button>
         <span id="processStatus" class="muted"></span>
       </div>
-      <div class="muted" style="margin-top:8px">
-        Consejo: si querés ajustar reglas, usá <a href="/categorias">Categorías</a> antes de reprocesar.
+      <details>
+        <summary>Opcional: período fijo (YYYY-MM)</summary>
+        <div class="row" style="margin-top:10px">
+          <label for="periodo">Período</label>
+          <input id="periodo" type="text" placeholder="ej. 2026-01" />
+        </div>
+        <p class="muted">Solo si tus archivos mezclan meses y querés forzar un mes concreto (avanzado).</p>
+      </details>
+      <div class="muted" style="margin-top:12px">
+        <strong>Avanzado:</strong> <a href="/categorias">editar reglas de categorías</a> (JSON) antes de reprocesar.
       </div>
-    </div>
-
-    <div class="card">
-      <h3>Categorías</h3>
-      <a href="/categorias">Editar categorías (keywords/regex)</a>
     </div>
 
     <div class="card">
       <h3>Privacidad</h3>
-      <div class="muted">
-        Todo (inputs + outputs) se borra automáticamente a la hora.
-      </div>
+      <div class="muted">Todo se borra a la hora.</div>
       <form action="/api/session/delete" method="post" onsubmit="return confirm('¿Eliminar tus datos ahora?');">
         <button class="secondary" type="submit">Eliminar mis datos ahora</button>
       </form>
@@ -88,7 +89,7 @@
       });
 
       document.getElementById('processBtn').addEventListener('click', async () => {
-        const periodo = document.getElementById('periodo').value.trim();
+        const periodo = (document.getElementById('periodo') && document.getElementById('periodo').value) ? document.getElementById('periodo').value.trim() : '';
         const processStatus = document.getElementById('processStatus');
         processStatus.textContent = 'Encolando...';
         const fd = new FormData();
@@ -106,4 +107,3 @@
     </script>
   </body>
 </html>
-

@@ -130,22 +130,19 @@ async def upload_files(
 def process(
     response: Response,
     tg_session: str | None = Cookie(default=None),
-    periodo: str = Form(...),
+    periodo: str = Form(""),
 ):
     sid = _get_or_create_session_id(response, tg_session)
     sp = ensure_session(sid)
     _init_session_files(sp)
 
-    # minimal validation: YYYY-MM or "auto"
-    if periodo != "auto":
-        if len(periodo) != 7 or periodo[4] != "-":
-            raise HTTPException(status_code=400, detail="Período inválido. Usá YYYY-MM o 'auto'.")
+    # Vacío o "auto" → se infiere YYYY-MM desde las fechas de los archivos subidos.
+    p = (periodo or "").strip()
+    if p and p.lower() != "auto":
+        if len(p) != 7 or p[4] != "-":
+            raise HTTPException(status_code=400, detail="Período inválido. Usá YYYY-MM o dejalo vacío para automático.")
 
-    # For MVP, "auto" picks the most recent YYYY-MM folder name among uploaded files? Here we require explicit.
-    if periodo == "auto":
-        raise HTTPException(status_code=400, detail="En MVP web, elegí un período explícito (YYYY-MM).")
-
-    res = executor.submit(sp, periodo)
+    res = executor.submit(sp, p if p else None)
     return {"ok": True, "run_id": res.run_id}
 
 

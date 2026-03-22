@@ -109,6 +109,8 @@
 
         if (data.status === 'done' && data.summary) {
           const periodo = data.periodo || data.summary.periodo;
+          const inf = data.summary.periodo_inferido === true;
+          statusLine.textContent = `Estado: done · Período: ${periodo}` + (inf ? ' (calculado desde las fechas de los archivos)' : '');
           setDownloads(periodo);
           outputsCard.style.display = '';
 

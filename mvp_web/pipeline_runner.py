@@ -11,6 +11,8 @@ from src.estandarizar import procesar_periodo
 from src.categorizar import categorizar_periodo
 from src.metricas import calcular_metricas
 
+from .periodo_web import inferir_periodo_desde_inputs
+
 
 def _validate_categorias_json(data: dict) -> list[str]:
     errors: list[str] = []
@@ -76,7 +78,7 @@ def compute_summary(periodo: str, categorizado_path: Path, metricas_path: Path) 
 
 
 def run_pipeline_for_session(
-    periodo: str,
+    periodo: str | None,
     inputs_dir: Path,
     outputs_dir: Path,
     categorias_path: Path,
@@ -87,8 +89,22 @@ def run_pipeline_for_session(
     """
     Ejecuta los 3 pasos usando carpetas por sesión.
     Devuelve un summary serializable para la UI.
+
+    Si ``periodo`` es None, vacío o ``auto``, se infiere YYYY-MM desde las fechas
+    de los movimientos importados (fecha máxima).
     """
     outputs_dir.mkdir(parents=True, exist_ok=True)
+
+    raw = (periodo or "").strip()
+    pl = raw.lower()
+    if not pl or pl == "auto":
+        periodo = inferir_periodo_desde_inputs(inputs_dir)
+        periodo_inferido = True
+    else:
+        periodo = raw
+        if len(periodo) != 7 or periodo[4] != "-":
+            raise ValueError("Período inválido. Usá YYYY-MM o dejalo en automático.")
+        periodo_inferido = False
 
     # 1) estandarizar -> genera estandarizado_{periodo}.xlsx en outputs_dir/estandarizado
     estandarizado_dir = outputs_dir / "estandarizado"
@@ -117,6 +133,7 @@ def run_pipeline_for_session(
     metricas_file = metricas_dir / f"metricas_{periodo}.xlsx"
 
     summary = compute_summary(periodo, categorizado_file, metricas_file)
+    summary["periodo_inferido"] = periodo_inferido
     summary["outputs"] = {
         "estandarizado": str(estandarizado_file),
         "categorizado": str(categorizado_file),
