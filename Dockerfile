@@ -13,8 +13,8 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY config/categorias.ejemplo.json config/categorias.ejemplo.json
-COPY config/objetivos.ejemplo.json config/objetivos.ejemplo.json
+# Base app config (paths, flags). Ejemplos for categorías/objetivos — session copies from these at runtime.
+COPY config/ config/
 COPY src/ src/
 COPY mvp_web/ mvp_web/
 
