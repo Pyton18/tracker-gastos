@@ -6,8 +6,11 @@ Esta carpeta es una landing “linda” para compartir en LinkedIn.
 
 El CTA apunta a **`/go`** en la misma web (Vercel). Esa página:
 
-1. Carga un instante (Web Analytics registra **pageview en `/go`**).
-2. Redirige al API en Render (`NEXT_PUBLIC_MVP_API_URL` o default).
+1. Carga (Web Analytics registra **pageview en `/go`**).
+2. Hace **polling** a `GET /health` del API en Render hasta que responde (así el usuario no ve la pantalla fea de “service waking up” del host mientras el free tier arranca).
+3. Redirige al API cuando está listo.
+
+En Render, configurá **`TG_CORS_ORIGINS`** con el origen de Vercel (ej. `https://tracker-gastos.vercel.app`), sin eso el navegador no puede leer `/health` desde `/go`.
 
 En el dashboard de **Analytics**, filtrá por path **`/go`** ≈ cantidad de clics en “Try it” que siguieron al producto.
 

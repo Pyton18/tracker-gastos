@@ -8,6 +8,7 @@ import time
 from pathlib import Path
 
 from fastapi import Body, Cookie, FastAPI, File, Form, HTTPException, Request, Response, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
@@ -36,6 +37,19 @@ CLEANUP_INTERVAL_SECONDS = int(os.environ.get("TG_CLEANUP_INTERVAL_SECONDS", "60
 app = FastAPI(title="Spend Tracker (MVP API)")
 templates = Jinja2Templates(directory=str((Path(__file__).parent / "templates").resolve()))
 executor = InProcessExecutor()
+
+# Lets the Vercel /go page poll GET /health before navigating (avoids Render’s cold-start HTML in the tab).
+_cors = os.environ.get("TG_CORS_ORIGINS", "").strip()
+if _cors:
+    _origins = [o.strip() for o in _cors.split(",") if o.strip()]
+    if _origins:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=_origins,
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
 
 
 class BudgetCategoryIn(BaseModel):

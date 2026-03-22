@@ -18,6 +18,7 @@ The web UI + API live in `mvp_web/`. Deploy this **separately** from the Vercel 
 | `TG_MAX_FILES` | `30` | Max files per session |
 | `TG_COOKIE_SECURE` | `0` | Set to **`1`** in production (HTTPS) |
 | `TG_STORAGE_ROOT` | `./storage` locally; **`/tmp/tg-storage` in Docker** | Must be **writable**. Avoid `/data/...` unless you know the host allows writes there (some platforms mount `/data` read-only). |
+| `TG_CORS_ORIGINS` | _(empty)_ | Comma-separated origins allowed to call the API from the browser (e.g. `https://tracker-gastos.vercel.app`). **Required** for the Vercel `/go` page to poll `/health` before redirect; without it, the wait screen cannot verify the server is up. |
 
 ## Option A — Docker (Fly.io, Railway, any host)
 
@@ -38,6 +39,7 @@ Open `http://localhost:8000/`.
 4. **Start command**: `uvicorn mvp_web.main:app --host 0.0.0.0 --port $PORT`
 5. **Environment**:
    - `TG_COOKIE_SECURE` = `1`
+   - `TG_CORS_ORIGINS` = `https://tracker-gastos.vercel.app` (your real Vercel URL; comma-separate preview domains if needed)
    - Optional: leave `TG_STORAGE_ROOT` unset to use the image default (`/tmp/tg-storage`), or set any **writable** path.
 
 6. Health check path: `/health`
