@@ -1,135 +1,167 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Resultados — Tracker de Gastos</title>
+    <title>Results — Spend Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
     <style>
-      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; max-width: 1100px; }
-      .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin: 16px 0; }
-      .muted { color: #666; font-size: 14px; }
-      .danger { color: #b00020; }
+      :root {
+        --text: #1c2333;
+        --muted: #5c6578;
+        --accent: #0f766e;
+        --danger: #b91c1c;
+        --surface: #ffffff;
+        --surface2: #f4f6f9;
+        --radius: 16px;
+        --shadow: 0 4px 24px rgba(15, 20, 25, 0.08);
+      }
+      body {
+        margin: 0;
+        font-family: "DM Sans", system-ui, sans-serif;
+        color: var(--text);
+        background: linear-gradient(165deg, #eef7f5 0%, #f8fafc 40%, #e8f0ff 100%);
+        min-height: 100vh;
+      }
+      .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 20px 48px; }
+      h2 { margin: 0 0 8px; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
+      h3 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; }
+      .muted { color: var(--muted); font-size: 14px; }
+      .row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+      .card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin: 16px 0;
+        box-shadow: var(--shadow);
+        border: 1px solid rgba(0,0,0,0.06);
+      }
       table { border-collapse: collapse; width: 100%; }
-      th, td { border-bottom: 1px solid #eee; padding: 8px; text-align: left; font-size: 14px; }
-      a { color: #0b57d0; }
-      button { padding: 10px 14px; border: 0; border-radius: 10px; background: #111; color: #fff; cursor: pointer; }
-      .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-      code { background: #f5f5f5; padding: 2px 6px; border-radius: 6px; }
+      th, td { border-bottom: 1px solid #eee; padding: 10px 8px; text-align: left; font-size: 14px; }
+      th { font-weight: 600; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+      a { color: var(--accent); font-weight: 600; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .danger { color: var(--danger); }
+      code { background: var(--surface2); padding: 2px 7px; border-radius: 6px; font-size: 13px; }
     </style>
   </head>
   <body>
-    <h2>Resultados</h2>
-    <div class="muted">Run: <code>{{ run_id }}</code></div>
+    <div class="wrap">
+      <h2>Results</h2>
+      <div class="muted">Run: <code>{{ run_id }}</code></div>
 
-    <div class="card">
-      <div class="row">
-        <a href="/">← Volver</a>
-        <a href="/categorias">Editar categorías</a>
+      <div class="card">
+        <div class="row">
+          <a href="/">← Back</a>
+          <a href="/categorias">Edit categories</a>
+        </div>
       </div>
-    </div>
 
-    <div class="card">
-      <h3>Estado</h3>
-      <div id="statusLine" class="muted">Cargando...</div>
-      <div id="errorLine" class="danger"></div>
-    </div>
-
-    <div class="card" id="outputsCard" style="display:none">
-      <h3>Descargas</h3>
-      <div class="row">
-        <a id="dlE" href="#">Estandarizado</a>
-        <a id="dlC" href="#">Categorizado</a>
-        <a id="dlM" href="#">Métricas</a>
+      <div class="card">
+        <h3>Status</h3>
+        <div id="statusLine" class="muted">Loading…</div>
+        <div id="errorLine" class="danger"></div>
       </div>
+
+      <div class="card" id="outputsCard" style="display:none">
+        <h3>Downloads</h3>
+        <div class="row">
+          <a id="dlE" href="#">Standardized</a>
+          <a id="dlC" href="#">Categorized</a>
+          <a id="dlM" href="#">Metrics</a>
+        </div>
+      </div>
+
+      <div class="card" id="metricasCard" style="display:none">
+        <h3>Metrics</h3>
+        <table id="metricasTable">
+          <thead><tr><th>Category</th><th>Cap</th><th>Spent</th><th>% of target</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="card" id="sinAsignarCard" style="display:none">
+        <h3>Uncategorized samples</h3>
+        <div class="muted" id="sinAsignarCount"></div>
+        <ul id="sinAsignarList"></ul>
+      </div>
+
+      <script>
+        const runId = "{{ run_id }}";
+        const statusLine = document.getElementById('statusLine');
+        const errorLine = document.getElementById('errorLine');
+
+        const outputsCard = document.getElementById('outputsCard');
+        const metricasCard = document.getElementById('metricasCard');
+        const sinAsignarCard = document.getElementById('sinAsignarCard');
+
+        function setDownloads(periodo) {
+          document.getElementById('dlE').href = `/api/outputs/${periodo}/estandarizado`;
+          document.getElementById('dlC').href = `/api/outputs/${periodo}/categorizado`;
+          document.getElementById('dlM').href = `/api/outputs/${periodo}/metricas`;
+        }
+
+        function renderMetricas(rows) {
+          const tbody = document.querySelector('#metricasTable tbody');
+          tbody.innerHTML = '';
+          for (const r of rows) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${r["Categoria"] ?? ""}</td><td>${r["Tope"] ?? ""}</td><td>${r["Gastado"] ?? ""}</td><td>${r["% Cumplimiento"] ?? ""}</td>`;
+            tbody.appendChild(tr);
+          }
+        }
+
+        function renderSinAsignar(items) {
+          const ul = document.getElementById('sinAsignarList');
+          ul.innerHTML = '';
+          for (const s of items) {
+            const li = document.createElement('li');
+            li.textContent = s;
+            ul.appendChild(li);
+          }
+        }
+
+        async function poll() {
+          const res = await fetch(`/api/runs/${runId}`);
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            statusLine.textContent = 'Error loading status';
+            errorLine.textContent = data.detail || 'Run not found';
+            return;
+          }
+          statusLine.textContent = `Status: ${data.status || 'unknown'}`;
+
+          if (data.status === 'error') {
+            errorLine.textContent = data.error || 'Error';
+            return;
+          }
+
+          if (data.status === 'done' && data.summary) {
+            const periodo = data.periodo || data.summary.periodo;
+            const inf = data.summary.periodo_inferido === true;
+            statusLine.textContent =
+              `Status: done · Period: ${periodo}` + (inf ? ' (inferred from transaction dates in your files)' : '');
+            setDownloads(periodo);
+            outputsCard.style.display = '';
+
+            const metricas = data.summary.metricas || [];
+            renderMetricas(metricas);
+            metricasCard.style.display = '';
+
+            const sinAsignar = data.summary.sin_asignar || [];
+            document.getElementById('sinAsignarCount').textContent = `Showing ${sinAsignar.length} (max 250)`;
+            renderSinAsignar(sinAsignar);
+            sinAsignarCard.style.display = '';
+            return;
+          }
+
+          setTimeout(poll, 800);
+        }
+
+        poll();
+      </script>
     </div>
-
-    <div class="card" id="metricasCard" style="display:none">
-      <h3>Métricas</h3>
-      <table id="metricasTable">
-        <thead><tr><th>Categoría</th><th>Tope</th><th>Gastado</th><th>% Cumplimiento</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-
-    <div class="card" id="sinAsignarCard" style="display:none">
-      <h3>Sin asignar</h3>
-      <div class="muted" id="sinAsignarCount"></div>
-      <ul id="sinAsignarList"></ul>
-    </div>
-
-    <script>
-      const runId = "{{ run_id }}";
-      const statusLine = document.getElementById('statusLine');
-      const errorLine = document.getElementById('errorLine');
-
-      const outputsCard = document.getElementById('outputsCard');
-      const metricasCard = document.getElementById('metricasCard');
-      const sinAsignarCard = document.getElementById('sinAsignarCard');
-
-      function setDownloads(periodo) {
-        document.getElementById('dlE').href = `/api/outputs/${periodo}/estandarizado`;
-        document.getElementById('dlC').href = `/api/outputs/${periodo}/categorizado`;
-        document.getElementById('dlM').href = `/api/outputs/${periodo}/metricas`;
-      }
-
-      function renderMetricas(rows) {
-        const tbody = document.querySelector('#metricasTable tbody');
-        tbody.innerHTML = '';
-        for (const r of rows) {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${r["Categoria"] ?? ""}</td><td>${r["Tope"] ?? ""}</td><td>${r["Gastado"] ?? ""}</td><td>${r["% Cumplimiento"] ?? ""}</td>`;
-          tbody.appendChild(tr);
-        }
-      }
-
-      function renderSinAsignar(items) {
-        const ul = document.getElementById('sinAsignarList');
-        ul.innerHTML = '';
-        for (const s of items) {
-          const li = document.createElement('li');
-          li.textContent = s;
-          ul.appendChild(li);
-        }
-      }
-
-      async function poll() {
-        const res = await fetch(`/api/runs/${runId}`);
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          statusLine.textContent = 'Error cargando estado';
-          errorLine.textContent = data.detail || 'Run no encontrado';
-          return;
-        }
-        statusLine.textContent = `Estado: ${data.status || 'unknown'}`;
-
-        if (data.status === 'error') {
-          errorLine.textContent = data.error || 'Error';
-          return;
-        }
-
-        if (data.status === 'done' && data.summary) {
-          const periodo = data.periodo || data.summary.periodo;
-          const inf = data.summary.periodo_inferido === true;
-          statusLine.textContent = `Estado: done · Período: ${periodo}` + (inf ? ' (calculado desde las fechas de los archivos)' : '');
-          setDownloads(periodo);
-          outputsCard.style.display = '';
-
-          const metricas = data.summary.metricas || [];
-          renderMetricas(metricas);
-          metricasCard.style.display = '';
-
-          const sinAsignar = data.summary.sin_asignar || [];
-          document.getElementById('sinAsignarCount').textContent = `Mostrando ${sinAsignar.length} (máx 250)`;
-          renderSinAsignar(sinAsignar);
-          sinAsignarCard.style.display = '';
-          return;
-        }
-
-        setTimeout(poll, 800);
-      }
-
-      poll();
-    </script>
   </body>
 </html>
-

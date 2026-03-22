@@ -1,98 +1,440 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Spend Tracker — MVP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
     <style>
-      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; max-width: 960px; }
-      .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin: 16px 0; }
-      .muted { color: #666; font-size: 14px; }
-      button { padding: 10px 14px; border: 0; border-radius: 10px; background: #111; color: #fff; cursor: pointer; }
-      button.secondary { background: #f2f2f2; color: #111; }
-      ul { margin: 8px 0 0 18px; }
+      :root {
+        --bg: #0f1419;
+        --bg2: #1a222c;
+        --surface: #ffffff;
+        --surface2: #f4f6f9;
+        --text: #1c2333;
+        --muted: #5c6578;
+        --accent: #0d9488;
+        --accent2: #0f766e;
+        --ring: rgba(13, 148, 136, 0.35);
+        --danger: #b91c1c;
+        --radius: 16px;
+        --shadow: 0 4px 24px rgba(15, 20, 25, 0.08);
+        --shadow-lg: 0 20px 50px rgba(15, 20, 25, 0.12);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "DM Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        color: var(--text);
+        background: linear-gradient(165deg, #eef7f5 0%, #f8fafc 40%, #e8f0ff 100%);
+        min-height: 100vh;
+      }
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 28px 20px 64px;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+      }
+      .brand {
+        font-weight: 700;
+        font-size: 1.15rem;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+      .pill {
+        font-size: 12px;
+        font-weight: 500;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--muted);
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: var(--shadow);
+      }
+      .hero {
+        background: var(--surface);
+        border-radius: calc(var(--radius) + 4px);
+        padding: 36px 32px 40px;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(0,0,0,0.05);
+        margin-bottom: 28px;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0; right: 0;
+        width: 55%;
+        height: 100%;
+        background: radial-gradient(ellipse at 80% 20%, rgba(13, 148, 136, 0.12), transparent 55%);
+        pointer-events: none;
+      }
+      .hero h1 {
+        margin: 0 0 12px;
+        font-size: clamp(1.5rem, 4vw, 1.85rem);
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1.2;
+        position: relative;
+      }
+      .lead {
+        font-size: 1.05rem;
+        color: var(--muted);
+        line-height: 1.55;
+        margin: 0 0 24px;
+        max-width: 62ch;
+        position: relative;
+      }
+      .scope {
+        display: inline-flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: var(--surface2);
+        border: 1px solid rgba(0,0,0,0.06);
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--text);
+        margin-bottom: 28px;
+        position: relative;
+      }
+      .scope strong { color: var(--accent2); }
+      .steps {
+        display: grid;
+        gap: 14px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: s;
+        position: relative;
+      }
+      .steps li {
+        counter-increment: s;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 14px;
+        align-items: start;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #fafbfc, #fff);
+        border: 1px solid rgba(0,0,0,0.05);
+      }
+      .steps li::before {
+        content: counter(s);
+        font-weight: 700;
+        font-size: 13px;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: var(--accent);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .steps li p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--muted); }
+      .steps li p strong { color: var(--text); }
+      .regex-note {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(0,0,0,0.08);
+        font-size: 14px;
+        line-height: 1.55;
+        color: var(--muted);
+        position: relative;
+      }
+      .regex-note code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 12px;
+        background: var(--surface2);
+        padding: 2px 7px;
+        border-radius: 6px;
+        color: var(--text);
+      }
+      .anchor-hint {
+        text-align: center;
+        margin-top: 24px;
+        position: relative;
+      }
+      .anchor-hint a {
+        color: var(--accent2);
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 14px;
+      }
+      .anchor-hint a:hover { text-decoration: underline; }
+      .card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 22px 22px 24px;
+        margin: 18px 0;
+        box-shadow: var(--shadow);
+        border: 1px solid rgba(0,0,0,0.06);
+      }
+      .card h3 {
+        margin: 0 0 10px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .muted { color: var(--muted); font-size: 14px; line-height: 1.5; }
+      .muted p { margin: 0 0 10px; }
+      .muted p:last-child { margin-bottom: 0; }
+      button {
+        padding: 11px 18px;
+        border: 0;
+        border-radius: 11px;
+        background: linear-gradient(180deg, #1e293b, #0f172a);
+        color: #fff;
+        font-weight: 600;
+        font-size: 14px;
+        font-family: inherit;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.3);
+      }
+      button.secondary {
+        background: var(--surface2);
+        color: var(--text);
+        box-shadow: none;
+        border: 1px solid rgba(0,0,0,0.08);
+      }
+      button.secondary:hover {
+        background: #e8ecf1;
+        box-shadow: none;
+      }
+      button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+      .upload-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .file-wrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+      }
+      .file-wrap input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+      }
+      .file-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 11px;
+        border: 2px dashed rgba(13, 148, 136, 0.45);
+        background: rgba(13, 148, 136, 0.06);
+        color: var(--accent2);
+        font-weight: 600;
+        font-size: 14px;
+        position: relative;
+        cursor: pointer;
+        transition: border-color 0.15s, background 0.15s;
+      }
+      .file-wrap:hover .file-btn {
+        border-color: var(--accent);
+        background: rgba(13, 148, 136, 0.1);
+      }
+      .hint-upload {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        max-width: 100%;
+      }
+      .hint-upload strong { color: #92400e; }
+      ul.files-list { margin: 12px 0 0; padding-left: 20px; color: var(--muted); font-size: 14px; }
       .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-      .danger { color: #b00020; }
+      .danger { color: var(--danger); }
+      a { color: var(--accent2); font-weight: 500; }
     </style>
   </head>
   <body>
-    <h2>Spend Tracker (MVP)</h2>
-    <div class="muted">Sesión: {{ session_id_short }}… (se borra en 1 hora)</div>
-
-    <div class="card">
-      <h3>1) Subir archivos</h3>
-      <div class="muted">Mercado Pago (xlsx), banco / Santander (xlsx o PDF), tarjeta Visa (xlsx o PDF).</div>
-      <form id="uploadForm">
-        <input id="files" name="files" type="file" multiple />
-        <button type="submit">Subir</button>
-        <span id="uploadStatus" class="muted"></span>
-      </form>
-      {% if files and files|length > 0 %}
-        <div class="muted">Archivos en esta sesión:</div>
-        <ul>
-          {% for f in files %}
-            <li>{{ f }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    </div>
-
-    <div class="card">
-      <h3>2) Procesar</h3>
-      <p class="muted">
-        Se importan <strong>todos</strong> los movimientos de los archivos subidos (no se filtra por mes).
-        El nombre del archivo de salida y la etiqueta de período usan el mes de la <strong>fecha más reciente</strong>
-        entre esos movimientos. Si mezclás varios meses, igual ves todo junto en un solo resultado.
-      </p>
-      <div class="row">
-        <button id="processBtn" type="button">Procesar</button>
-        <span id="processStatus" class="muted"></span>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand">Spend Tracker</div>
+        <div class="pill">Session {{ session_id_short }}… · deleted after 1 hour</div>
       </div>
-      <div class="muted" style="margin-top:12px">
-        <strong>Avanzado:</strong> <a href="/categorias">editar reglas de categorías</a> (JSON) antes de reprocesar.
-      </div>
-    </div>
 
-    <div class="card">
-      <h3>Privacidad</h3>
-      <div class="muted">Todo se borra a la hora.</div>
-      <form action="/api/session/delete" method="post" onsubmit="return confirm('¿Eliminar tus datos ahora?');">
-        <button class="secondary" type="submit">Eliminar mis datos ahora</button>
-      </form>
+      <section class="hero" aria-labelledby="intro-title">
+        <h1 id="intro-title">Turn your bank &amp; wallet exports into a monthly summary</h1>
+        <p class="lead">
+          This tool ingests spreadsheets and PDFs, normalizes transactions, applies your category rules, and builds simple
+          budget metrics. Everything runs in a temporary browser session—nothing permanent unless you download the outputs.
+        </p>
+        <div class="scope">
+          <span>
+            <strong>Supported today:</strong> <strong>Mercado Pago</strong> account exports and <strong>Santander Argentina</strong>
+            (checking account movements and Visa card statements), as <strong>XLSX</strong> or <strong>PDF</strong>.
+            Other banks or formats are not wired in yet—results may be wrong or empty.
+          </span>
+        </div>
+        <ol class="steps">
+          <li>
+            <p>
+              <strong>Download</strong> your latest Santander movements, your card statement(s), and your Mercado Pago activity
+              from each provider’s website or app (whatever they give you as XLSX/PDF).
+            </p>
+          </li>
+          <li>
+            <p>
+              <strong>Upload</strong> those files below. As soon as you confirm in the file dialog, they are sent automatically—no extra click needed.
+            </p>
+          </li>
+          <li>
+            <p>
+              <strong>Process</strong> to merge everything, categorize, and compute metrics. All movements in your files are included;
+              the output filename uses the month of the <strong>latest transaction date</strong> (not a filter).
+            </p>
+          </li>
+          <li>
+            <p>
+              <strong>Optional:</strong> tweak category rules (keywords + regex) and run <strong>Process</strong> again to refine labels.
+            </p>
+          </li>
+        </ol>
+        <div class="regex-note">
+          <strong style="color: var(--text)">Why regex in the JSON?</strong>
+          Each category can list <code>keywords</code> (simple substrings) and <code>regex</code> patterns. Regex lets you match
+          messy descriptions—e.g. merchant names with extra numbers, or “PAGO VISA *1234”. The pipeline tests your transaction
+          text against those patterns so recurring merchants land in the right bucket. Edit rules under <strong>Advanced</strong> below.
+        </div>
+        <div class="anchor-hint">
+          <a href="#upload">↓ Upload files</a>
+        </div>
+      </section>
+
+      <div class="card" id="upload">
+        <h3>1 · Upload files</h3>
+        <p class="muted">Mercado Pago (xlsx), Santander account (xlsx or PDF), Santander Visa card (xlsx or PDF).</p>
+        <form id="uploadForm">
+          <div class="upload-row">
+            <div class="file-wrap">
+              <span class="file-btn">Choose files</span>
+              <input id="files" name="files" type="file" multiple accept=".xlsx,.xls,.pdf,.csv" />
+            </div>
+            <button type="submit" id="uploadManualBtn" class="secondary">Upload again</button>
+            <span id="uploadStatus" class="muted"></span>
+          </div>
+        </form>
+        <p class="hint-upload">
+          <strong>Tip:</strong> After you pick files and click <strong>Open</strong> in the system dialog, they upload automatically.
+          Use <strong>Upload again</strong> only if you need to resend the same file (some browsers won’t re-fire the picker) or retry after an error.
+        </p>
+        {% if files and files|length > 0 %}
+          <div class="muted" style="margin-top: 14px">Files in this session:</div>
+          <ul class="files-list">
+            {% for f in files %}
+              <li>{{ f }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <h3>2 · Process</h3>
+        <p class="muted">
+          Imports <strong>all</strong> movements from the files you uploaded (no month filter). The output name and <code>periodo</code>
+          label use the calendar month of the <strong>latest</strong> transaction date. If you mix multiple months, you still get one combined result.
+        </p>
+        <div class="row">
+          <button id="processBtn" type="button">Run pipeline</button>
+          <span id="processStatus" class="muted"></span>
+        </div>
+        <div class="muted" style="margin-top: 14px">
+          <strong>Advanced:</strong> <a href="/categorias">Edit category rules</a> (JSON) before re-running.
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Privacy</h3>
+        <p class="muted">Session data is deleted automatically after one hour.</p>
+        <form action="/api/session/delete" method="post" onsubmit="return confirm('Delete your session data now?');">
+          <button class="secondary" type="submit">Delete my data now</button>
+        </form>
+      </div>
     </div>
 
     <script>
       const uploadForm = document.getElementById('uploadForm');
+      const fileInput = document.getElementById('files');
       const uploadStatus = document.getElementById('uploadStatus');
-      uploadForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const files = document.getElementById('files').files;
-        if (!files || files.length === 0) return;
-        uploadStatus.textContent = 'Subiendo...';
-        const fd = new FormData();
-        for (const f of files) fd.append('files', f);
-        const res = await fetch('/api/uploads', { method: 'POST', body: fd });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          uploadStatus.textContent = 'Error: ' + (data.detail || 'subida falló');
+      const uploadManualBtn = document.getElementById('uploadManualBtn');
+
+      async function doUpload(files) {
+        if (!files || files.length === 0) {
+          uploadStatus.textContent = 'Choose one or more files first.';
           uploadStatus.classList.add('danger');
           return;
         }
-        uploadStatus.textContent = 'OK. Recargá para ver la lista.';
-        setTimeout(() => location.reload(), 400);
+        uploadStatus.textContent = 'Uploading…';
+        uploadStatus.classList.remove('danger');
+        uploadManualBtn.disabled = true;
+        const fd = new FormData();
+        for (const f of files) fd.append('files', f);
+        try {
+          const res = await fetch('/api/uploads', { method: 'POST', body: fd });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            uploadStatus.textContent = 'Error: ' + (data.detail || 'upload failed');
+            uploadStatus.classList.add('danger');
+            return;
+          }
+          uploadStatus.textContent = 'Done. Refreshing…';
+          setTimeout(() => location.reload(), 400);
+        } finally {
+          uploadManualBtn.disabled = false;
+        }
+      }
+
+      uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await doUpload(fileInput.files);
+      });
+
+      fileInput.addEventListener('change', () => {
+        doUpload(fileInput.files);
       });
 
       document.getElementById('processBtn').addEventListener('click', async () => {
         const processStatus = document.getElementById('processStatus');
-        processStatus.textContent = 'Encolando...';
+        processStatus.textContent = 'Starting…';
+        processStatus.classList.remove('danger');
         const res = await fetch('/api/process', { method: 'POST' });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
-          processStatus.textContent = 'Error: ' + (data.detail || 'no se pudo procesar');
+          processStatus.textContent = 'Error: ' + (data.detail || 'could not start');
           processStatus.classList.add('danger');
           return;
         }
-        processStatus.textContent = 'Procesando...';
+        processStatus.textContent = 'Processing…';
         window.location.href = '/resultados/' + data.run_id;
       });
     </script>

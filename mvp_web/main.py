@@ -109,7 +109,7 @@ async def upload_files(
     _init_session_files(sp)
 
     if len(files) > MAX_FILES:
-        raise HTTPException(status_code=400, detail=f"Demasiados archivos (máx {MAX_FILES}).")
+        raise HTTPException(status_code=400, detail=f"Too many files (max {MAX_FILES}).")
 
     total = 0
     saved = []
@@ -117,7 +117,7 @@ async def upload_files(
         content = await f.read()
         total += len(content)
         if total > MAX_BYTES:
-            raise HTTPException(status_code=400, detail="Superaste el tamaño máximo por sesión.")
+            raise HTTPException(status_code=400, detail="Session size limit exceeded.")
         name = Path(f.filename or "upload.bin").name
         out = sp.inputs / name
         out.write_bytes(content)
@@ -150,7 +150,7 @@ def run_status(
     sp = ensure_session(sid)
     state = read_run_state(sp, run_id)
     if not state:
-        raise HTTPException(status_code=404, detail="Run no encontrado.")
+        raise HTTPException(status_code=404, detail="Run not found.")
     return state
 
 
@@ -225,7 +225,7 @@ def download_output(
     }
     path = mapping.get(name)
     if not path or not path.exists():
-        raise HTTPException(status_code=404, detail="Archivo no encontrado.")
+        raise HTTPException(status_code=404, detail="File not found.")
     media_type, _ = mimetypes.guess_type(str(path))
     return FileResponse(path, media_type=media_type or "application/octet-stream", filename=path.name)
 

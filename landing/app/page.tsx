@@ -38,8 +38,9 @@ export default function Page() {
             </div>
           </div>
           <p className="fineprint">
-            Currently supports: <strong>Mercado Pago</strong> statements and <strong>Santander</strong> account / Visa PDFs (Argentina).
-            More sources coming.
+            <strong>Argentina:</strong> works with <strong>Mercado Pago</strong> exports and <strong>Santander</strong> checking + Visa
+            (XLSX or PDF). Download your latest movements and statements from each site, then upload them in the app—no other banks
+            are supported yet.
           </p>
         </div>
 
@@ -78,10 +79,56 @@ export default function Page() {
                 <div className="kpiValue">76%</div>
               </div>
             </div>
-            <div className="footer">Drag & drop your files, get a clear monthly view.</div>
+            <div className="footer">Pick your exports, run the pipeline, download your monthly workbook.</div>
           </div>
         </div>
       </div>
+
+      <section className="stepsSection" aria-labelledby="how-heading">
+        <h2 id="how-heading" className="stepsTitle">
+          How it works
+        </h2>
+        <ol className="stepList">
+          <li>
+            <span className="stepNum">1</span>
+            <div>
+              <p className="stepHead">Get your files</p>
+              <p className="stepBody">
+                From Santander: latest account movements and your Visa statement. From Mercado Pago: your account activity export.
+                Use the formats the bank/wallet provides (XLSX or PDF).
+              </p>
+            </div>
+          </li>
+          <li>
+            <span className="stepNum">2</span>
+            <div>
+              <p className="stepHead">Upload in the app</p>
+              <p className="stepBody">
+                Files upload as soon as you confirm in the file dialog. Then run the pipeline to merge and normalize everything.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span className="stepNum">3</span>
+            <div>
+              <p className="stepHead">Optional: category rules</p>
+              <p className="stepBody">
+                Edit JSON rules with <strong>keywords</strong> and <strong>regex</strong> patterns so transaction descriptions map to
+                your categories (regex handles messy merchant strings). Re-run until you’re happy.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span className="stepNum">4</span>
+            <div>
+              <p className="stepHead">Download results</p>
+              <p className="stepBody">
+                Grab standardized, categorized, and metrics spreadsheets. Session data is deleted after an hour—save what you need.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </section>
     </div>
   );
 }
