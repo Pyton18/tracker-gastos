@@ -2,17 +2,23 @@
 
 Esta carpeta es una landing “linda” para compartir en LinkedIn.
 
-### Botón “Try it”
+### Botón “Try it” + medir intención (sin eventos de pago)
 
-Por defecto abre el **API en Render**: `https://tracker-gastos-api.onrender.com` (nueva pestaña).
+El CTA apunta a **`/go`** en la misma web (Vercel). Esa página:
 
-Para cambiar la URL sin tocar código, en Vercel → Project → **Settings → Environment Variables**:
+1. Carga un instante (Web Analytics registra **pageview en `/go`**).
+2. Redirige al API en Render (`NEXT_PUBLIC_MVP_API_URL` o default).
 
-- `NEXT_PUBLIC_MVP_API_URL` = tu URL del API
+En el dashboard de **Analytics**, filtrá por path **`/go`** ≈ cantidad de clics en “Try it” que siguieron al producto.
+
+Para cambiar la URL del API, en Vercel → **Environment Variables**:
+
+- `NEXT_PUBLIC_MVP_API_URL` = `https://tu-api.onrender.com`
 
 ### Analytics
 
-Podés seguir usando **Web Analytics** para pageviews del home. La ruta `/intent` ya no es el destino del CTA principal (quedó como página opcional).
+- **Home** `/` — tráfico general.
+- **`/go`** — intención de probar el producto (CTA).
 
 ### Correr local
 
