@@ -8,8 +8,7 @@ import time
 from pathlib import Path
 
 from fastapi import Cookie, FastAPI, File, Form, HTTPException, Request, Response, UploadFile
-from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from .executor import InProcessExecutor
@@ -24,9 +23,15 @@ MAX_FILES = int(os.environ.get("TG_MAX_FILES", "30"))
 COOKIE_SECURE = os.environ.get("TG_COOKIE_SECURE", "0") == "1"
 CLEANUP_INTERVAL_SECONDS = int(os.environ.get("TG_CLEANUP_INTERVAL_SECONDS", "600"))  # 10 min
 
-app = FastAPI(title="Tracker de Gastos (MVP)")
+app = FastAPI(title="Spend Tracker (MVP API)")
 templates = Jinja2Templates(directory=str((Path(__file__).parent / "templates").resolve()))
 executor = InProcessExecutor()
+
+
+@app.get("/health")
+def health():
+    """Health check for Render / Railway / Fly / k8s."""
+    return {"ok": True}
 
 
 def _get_or_create_session_id(response: Response, session_id: str | None) -> str:

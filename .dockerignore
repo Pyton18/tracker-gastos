@@ -1,0 +1,14 @@
+.git
+.github
+.venv
+venv
+__pycache__
+*.pyc
+Gastos
+data
+storage
+landing
+node_modules
+.next
+*.md
+!README.md

@@ -159,6 +159,13 @@ Abrir `http://127.0.0.1:8000/`.
 - `TG_COOKIE_SECURE`: `1` para cookies secure detrás de HTTPS (default `0`)
 - `TG_STORAGE_ROOT`: carpeta base para `storage/` (default `./storage`)
 
+### Deploy en internet (Render / Railway / Fly)
+
+Guía paso a paso: **[docs/DEPLOY_BACKEND.md](docs/DEPLOY_BACKEND.md)**  
+Health check: `GET /health`
+
+La landing en Vercel (`landing/`) y el API pueden vivir en dominios distintos: el botón “Try it” debe apuntar a la URL pública del API.
+
 ---
 
 ## Subir tu fork a GitHub
