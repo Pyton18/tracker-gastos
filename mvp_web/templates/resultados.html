@@ -55,7 +55,8 @@
       <div class="card">
         <div class="row">
           <a href="/">← Back</a>
-          <a href="/categorias">Edit categories</a>
+          <a href="/categorias">Category rules</a>
+          <a href="/objetivos">Budget targets</a>
         </div>
       </div>
 
@@ -76,8 +77,13 @@
 
       <div class="card" id="metricasCard" style="display:none">
         <h3>Metrics</h3>
+        <p class="muted" style="margin:0 0 12px; max-width: 72ch">
+          <strong>Budget</strong> = monthly target for that category. <strong>Total</strong> compares all spending (including uncategorized)
+          against the overall <code>total</code> budget in <a href="/objetivos">Budget targets</a>.
+          <strong>% of budget</strong> = share of that budget used (100% = you hit the limit).
+        </p>
         <table id="metricasTable">
-          <thead><tr><th>Category</th><th>Cap</th><th>Spent</th><th>% of target</th></tr></thead>
+          <thead><tr><th>Category</th><th>Budget</th><th>Spent</th><th>% of budget</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>

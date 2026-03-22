@@ -38,6 +38,47 @@ def _validate_categorias_json(data: dict) -> list[str]:
     return errors
 
 
+def _validate_objetivos_json(data: dict) -> list[str]:
+    errors: list[str] = []
+    if not isinstance(data, dict):
+        return ["objetivos.json must be a JSON object"]
+    cats = data.get("categorias")
+    if cats is None:
+        errors.append('"categorias" is required (object: category name -> budget amount)')
+    elif not isinstance(cats, dict):
+        errors.append('"categorias" must be an object')
+    else:
+        for k, v in cats.items():
+            if not isinstance(k, str) or not k.strip():
+                errors.append(f"invalid category key: {k!r}")
+                continue
+            if isinstance(v, bool) or not isinstance(v, (int, float)):
+                errors.append(f"budget for {k!r} must be a number")
+    total = data.get("total")
+    if total is not None and (isinstance(total, bool) or not isinstance(total, (int, float))):
+        errors.append('"total" must be a number (overall monthly budget cap)')
+    excl = data.get("excluir")
+    if excl is not None:
+        if not isinstance(excl, dict):
+            errors.append('"excluir" must be an object')
+        elif "pagos_tarjeta" in excl and not isinstance(excl.get("pagos_tarjeta"), bool):
+            errors.append('"excluir.pagos_tarjeta" must be a boolean')
+    return errors
+
+
+def validate_and_write_objetivos_json(path: Path, raw_json: str) -> tuple[bool, list[str]]:
+    try:
+        data = json.loads(raw_json)
+    except Exception as e:
+        return False, [f"Invalid JSON: {e}"]
+    errors = _validate_objetivos_json(data)
+    if errors:
+        return False, errors
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    return True, []
+
+
 def validate_and_write_categorias_json(path: Path, raw_json: str) -> tuple[bool, list[str]]:
     try:
         data = json.loads(raw_json)

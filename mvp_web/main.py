@@ -12,7 +12,7 @@ from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, Resp
 from fastapi.templating import Jinja2Templates
 
 from .executor import InProcessExecutor
-from .pipeline_runner import validate_and_write_categorias_json
+from .pipeline_runner import validate_and_write_categorias_json, validate_and_write_objetivos_json
 from .storage import (
     cleanup_expired_sessions,
     delete_session,
@@ -250,6 +250,45 @@ def save_categorias(
         )
         return resp
     return RedirectResponse(url="/categorias", status_code=303)
+
+
+@app.get("/objetivos", response_class=HTMLResponse)
+def objetivos_page(
+    request: Request,
+    tg_session: str | None = Cookie(default=None),
+):
+    sid, need_cookie = _session_id_from_cookie_or_new(tg_session)
+    sp = ensure_session(sid)
+    _init_session_files(sp)
+    raw = sp.objetivos_path.read_text(encoding="utf-8")
+    resp = templates.TemplateResponse(
+        request=request,
+        name="objetivos.html",
+        context={"request": request, "raw_json": raw},
+    )
+    if need_cookie:
+        _set_session_cookie(resp, sid)
+    return resp
+
+
+@app.post("/objetivos")
+def save_objetivos(
+    request: Request,
+    response: Response,
+    tg_session: str | None = Cookie(default=None),
+    raw_json: str = Form(...),
+):
+    sid = _get_or_create_session_id(response, tg_session)
+    sp = ensure_session(sid)
+    ok, errors = validate_and_write_objetivos_json(sp.objetivos_path, raw_json)
+    if not ok:
+        return templates.TemplateResponse(
+            request=request,
+            name="objetivos.html",
+            context={"request": request, "raw_json": raw_json, "errors": errors},
+            status_code=400,
+        )
+    return RedirectResponse(url="/objetivos", status_code=303)
 
 
 @app.get("/api/outputs/{periodo}/{name}")

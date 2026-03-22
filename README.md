@@ -155,6 +155,8 @@ En el MVP web, el **período (YYYY-MM)** del nombre de archivo y de la columna `
 
 Reglas de categorías genéricas: `config/categorias.ejemplo.json`. Para reglas personales en tu PC: ver **`docs/CATEGORIAS_PERSONALES.md`**.
 
+En la UI: **Category rules** (`/categorias`) y **Budget targets** (`/objetivos`) editan el JSON de la sesión; después hay que volver a **Run pipeline** para regenerar métricas.
+
 ### Variables de entorno (útiles para deploy)
 
 - `TG_TTL_SECONDS`: TTL de la sesión (default 3600)

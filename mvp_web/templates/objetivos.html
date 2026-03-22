@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Categories — Spend Tracker</title>
+    <title>Budget targets — Spend Tracker</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
@@ -38,7 +38,7 @@
       }
       textarea {
         width: 100%;
-        min-height: 420px;
+        min-height: 380px;
         font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
         font-size: 13px;
         padding: 14px;
@@ -63,23 +63,24 @@
       code { background: var(--surface2); padding: 2px 7px; border-radius: 6px; font-size: 13px; }
       a { color: var(--accent); font-weight: 600; text-decoration: none; }
       a:hover { text-decoration: underline; }
+      .nav { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
     </style>
   </head>
   <body>
     <div class="wrap">
-      <h2>Categories (advanced)</h2>
+      <h2>Budget targets (advanced)</h2>
       <p class="muted">
-        Default rules are <strong>generic</strong>. For personal merchant names, copy <code>config/categorias.json</code> locally
-        on your machine (not committed to Git) — see <code>docs/CATEGORIAS_PERSONALES.md</code>.
+        <strong>Budget</strong> = monthly spending target per category (same currency as your transactions).
+        <code>total</code> is the overall cap used for the <strong>Total</strong> row in metrics.
+        Category names must match the <code>nombre</code> values in your category rules.
       </p>
       <p class="muted">
-        Here you edit <code>keywords</code> and <code>regex</code> in JSON. Each entry is validated (syntax + regex
-        must compile). Regex matches <strong>transaction description</strong> text so you can catch noisy bank strings.
+        Edit JSON, save, then go back and run <strong>Run pipeline</strong> again to refresh the metrics table.
       </p>
       <div class="card">
-        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
+        <div class="nav">
           <a href="/">← Back</a>
-          <a href="/objetivos">Edit budget targets</a>
+          <a href="/categorias">Edit category rules</a>
         </div>
       </div>
       <div class="card">
@@ -93,7 +94,7 @@
             </ul>
           </div>
         {% endif %}
-        <form method="post" action="/categorias">
+        <form method="post" action="/objetivos">
           <textarea name="raw_json">{{ raw_json }}</textarea>
           <div>
             <button type="submit">Save</button>
