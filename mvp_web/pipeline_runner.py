@@ -91,7 +91,9 @@ def run_pipeline_for_session(
     Devuelve un summary serializable para la UI.
 
     Si ``periodo`` es None, vacío o ``auto``, se infiere YYYY-MM desde las fechas
-    de los movimientos importados (fecha máxima).
+    de los movimientos importados (fecha máxima). Eso **no filtra** filas: solo
+    define etiqueta/nombre de salida. Un valor explícito (solo uso programático)
+    tampoco filtra; la web ya no envía período manual.
     """
     outputs_dir.mkdir(parents=True, exist_ok=True)
 

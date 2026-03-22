@@ -151,7 +151,7 @@ python -m uvicorn mvp_web.main:app --host 127.0.0.1 --port 8000
 
 Abrir `http://127.0.0.1:8000/`.
 
-En el MVP web, el **período (YYYY-MM)** se **infiere** desde la fecha más reciente de los movimientos importados (no hace falta escribirlo). Opcionalmente podés fijar un período en la UI avanzada.
+En el MVP web, el **período (YYYY-MM)** del nombre de archivo y de la columna `periodo` se **infiere** desde la fecha más reciente entre los movimientos importados. **No filtra por mes**: si subís archivos de varios meses, se procesan todos juntos.
 
 Reglas de categorías genéricas: `config/categorias.ejemplo.json`. Para reglas personales en tu PC: ver **`docs/CATEGORIAS_PERSONALES.md`**.
 

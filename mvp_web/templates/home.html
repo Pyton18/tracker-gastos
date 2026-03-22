@@ -8,13 +8,11 @@
       body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; max-width: 960px; }
       .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin: 16px 0; }
       .muted { color: #666; font-size: 14px; }
-      input[type="text"] { padding: 8px; border: 1px solid #ccc; border-radius: 8px; width: 140px; }
       button { padding: 10px 14px; border: 0; border-radius: 10px; background: #111; color: #fff; cursor: pointer; }
       button.secondary { background: #f2f2f2; color: #111; }
       ul { margin: 8px 0 0 18px; }
       .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
       .danger { color: #b00020; }
-      details { margin-top: 10px; }
     </style>
   </head>
   <body>
@@ -41,19 +39,15 @@
 
     <div class="card">
       <h3>2) Procesar</h3>
-      <p class="muted">El período (mes) se calcula solo según las <strong>fechas de los movimientos</strong> (se usa el mes de la fecha más reciente). No hace falta escribir YYYY-MM salvo que quieras forzarlo.</p>
+      <p class="muted">
+        Se importan <strong>todos</strong> los movimientos de los archivos subidos (no se filtra por mes).
+        El nombre del archivo de salida y la etiqueta de período usan el mes de la <strong>fecha más reciente</strong>
+        entre esos movimientos. Si mezclás varios meses, igual ves todo junto en un solo resultado.
+      </p>
       <div class="row">
         <button id="processBtn" type="button">Procesar</button>
         <span id="processStatus" class="muted"></span>
       </div>
-      <details>
-        <summary>Opcional: período fijo (YYYY-MM)</summary>
-        <div class="row" style="margin-top:10px">
-          <label for="periodo">Período</label>
-          <input id="periodo" type="text" placeholder="ej. 2026-01" />
-        </div>
-        <p class="muted">Solo si tus archivos mezclan meses y querés forzar un mes concreto (avanzado).</p>
-      </details>
       <div class="muted" style="margin-top:12px">
         <strong>Avanzado:</strong> <a href="/categorias">editar reglas de categorías</a> (JSON) antes de reprocesar.
       </div>
@@ -89,12 +83,9 @@
       });
 
       document.getElementById('processBtn').addEventListener('click', async () => {
-        const periodo = (document.getElementById('periodo') && document.getElementById('periodo').value) ? document.getElementById('periodo').value.trim() : '';
         const processStatus = document.getElementById('processStatus');
         processStatus.textContent = 'Encolando...';
-        const fd = new FormData();
-        fd.append('periodo', periodo);
-        const res = await fetch('/api/process', { method: 'POST', body: fd });
+        const res = await fetch('/api/process', { method: 'POST' });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
           processStatus.textContent = 'Error: ' + (data.detail || 'no se pudo procesar');
