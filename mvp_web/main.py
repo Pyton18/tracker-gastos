@@ -13,7 +13,15 @@ from fastapi.templating import Jinja2Templates
 
 from .executor import InProcessExecutor
 from .pipeline_runner import validate_and_write_categorias_json
-from .storage import cleanup_expired_sessions, delete_session, ensure_session, new_session_id, read_run_state, session_paths
+from .storage import (
+    cleanup_expired_sessions,
+    delete_session,
+    ensure_session,
+    get_storage_root,
+    new_session_id,
+    read_run_state,
+    session_paths,
+)
 
 
 SESSION_COOKIE = "tg_session"
@@ -30,8 +38,18 @@ executor = InProcessExecutor()
 
 @app.get("/health")
 def health():
-    """Health check for Render / Railway / Fly / k8s."""
-    return {"ok": True}
+    """Health check for Render / Railway / Fly / k8s.
+
+    Extra fields help verify deploy: ``TG_STORAGE_ROOT`` often comes from the Docker
+    image (not listed in Render's Environment UI).
+    """
+    root = get_storage_root()
+    return {
+        "ok": True,
+        "storage_root": str(root),
+        "tg_storage_root_env": os.environ.get("TG_STORAGE_ROOT"),
+        "cookie_secure": COOKIE_SECURE,
+    }
 
 
 def _set_session_cookie(response: Response, sid: str) -> None:
