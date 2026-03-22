@@ -9,15 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --bg: #0f1419;
-        --bg2: #1a222c;
         --surface: #ffffff;
         --surface2: #f4f6f9;
         --text: #1c2333;
         --muted: #5c6578;
         --accent: #0d9488;
         --accent2: #0f766e;
-        --ring: rgba(13, 148, 136, 0.35);
         --danger: #b91c1c;
         --radius: 16px;
         --shadow: 0 4px 24px rgba(15, 20, 25, 0.08);
@@ -31,11 +28,7 @@
         background: linear-gradient(165deg, #eef7f5 0%, #f8fafc 40%, #e8f0ff 100%);
         min-height: 100vh;
       }
-      .wrap {
-        max-width: 920px;
-        margin: 0 auto;
-        padding: 28px 20px 64px;
-      }
+      .wrap { max-width: 920px; margin: 0 auto; padding: 28px 20px 64px; }
       .topbar {
         display: flex;
         align-items: center;
@@ -44,12 +37,7 @@
         margin-bottom: 28px;
         flex-wrap: wrap;
       }
-      .brand {
-        font-weight: 700;
-        font-size: 1.15rem;
-        letter-spacing: -0.02em;
-        color: var(--text);
-      }
+      .brand { font-weight: 700; font-size: 1.15rem; letter-spacing: -0.02em; color: var(--text); }
       .pill {
         font-size: 12px;
         font-weight: 500;
@@ -167,6 +155,10 @@
         text-align: center;
         margin-top: 24px;
         position: relative;
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
       }
       .anchor-hint a {
         color: var(--accent2);
@@ -192,7 +184,7 @@
       .muted { color: var(--muted); font-size: 14px; line-height: 1.5; }
       .muted p { margin: 0 0 10px; }
       .muted p:last-child { margin-bottom: 0; }
-      button {
+      button.primary-run {
         padding: 11px 18px;
         border: 0;
         border-radius: 11px;
@@ -205,7 +197,7 @@
         box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
         transition: transform 0.12s ease, box-shadow 0.12s ease;
       }
-      button:hover {
+      button.primary-run:hover {
         transform: translateY(-1px);
         box-shadow: 0 4px 14px rgba(15, 23, 42, 0.3);
       }
@@ -214,24 +206,17 @@
         color: var(--text);
         box-shadow: none;
         border: 1px solid rgba(0,0,0,0.08);
+        padding: 11px 18px;
+        border-radius: 11px;
+        font-weight: 600;
+        font-size: 14px;
+        font-family: inherit;
+        cursor: pointer;
       }
-      button.secondary:hover {
-        background: #e8ecf1;
-        box-shadow: none;
-      }
+      button.secondary:hover { background: #e8ecf1; }
       button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
-      .upload-row {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 12px;
-        margin-top: 14px;
-      }
-      .file-wrap {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-      }
+      .upload-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 14px; }
+      .file-wrap { position: relative; display: inline-flex; align-items: center; }
       .file-wrap input[type="file"] {
         position: absolute;
         inset: 0;
@@ -274,6 +259,114 @@
       .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
       .danger { color: var(--danger); }
       a { color: var(--accent2); font-weight: 500; }
+
+      .callout {
+        padding: 14px 16px;
+        border-radius: 12px;
+        margin: 0 0 16px;
+        font-size: 14px;
+        line-height: 1.55;
+      }
+      .callout-step2 {
+        background: #f0fdfa;
+        border: 1px solid #99f6e4;
+        color: #134e4a;
+      }
+      .callout-keywords {
+        background: #f5f3ff;
+        border: 1px solid #ddd6fe;
+        color: #1e1b4b;
+      }
+      .callout-hint {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .budget-total-row { margin-bottom: 18px; }
+      .budget-total-row label { display: block; font-size: 14px; color: var(--text); font-weight: 600; }
+      .budget-total-row input {
+        width: 100%;
+        max-width: 300px;
+        margin-top: 8px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(0,0,0,0.12);
+        font-size: 15px;
+      }
+      .budget-grid { display: grid; gap: 12px; margin-top: 8px; }
+      .budget-card {
+        display: grid;
+        grid-template-columns: 40px 1fr;
+        gap: 12px;
+        align-items: start;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(0,0,0,0.08);
+        background: linear-gradient(135deg, #fafbfc, #fff);
+      }
+      .btn-remove {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        border: 1px solid rgba(0,0,0,0.12);
+        background: #fff;
+        color: var(--danger);
+        font-size: 22px;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0;
+        font-weight: 400;
+      }
+      .btn-remove:hover { background: #fef2f2; }
+      .budget-card-fields label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 12px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-weight: 600;
+      }
+      .budget-card-fields input[type="text"],
+      .budget-card-fields input[type="number"] {
+        width: 100%;
+        margin-top: 4px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(0,0,0,0.12);
+        font-size: 15px;
+        font-family: inherit;
+      }
+      .add-cat {
+        margin-top: 16px;
+        padding: 16px;
+        border-radius: 12px;
+        border: 2px dashed rgba(13, 148, 136, 0.35);
+        background: rgba(13, 148, 136, 0.04);
+      }
+      .add-cat h4 { margin: 0 0 12px; font-size: 14px; color: var(--text); }
+      .add-cat .ac-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+      .add-cat label { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+      .add-cat input {
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(0,0,0,0.12);
+        min-width: 160px;
+        font-size: 15px;
+      }
+      .save-budget-row { margin-top: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+      button.btn-save-budget {
+        padding: 11px 20px;
+        border: 0;
+        border-radius: 11px;
+        background: var(--accent2);
+        color: #fff;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      button.btn-save-budget:hover { filter: brightness(1.05); }
     </style>
   </head>
   <body>
@@ -298,36 +391,24 @@
         </div>
         <ol class="steps">
           <li>
-            <p>
-              <strong>Download</strong> your latest Santander movements, your card statement(s), and your Mercado Pago activity
-              from each provider’s website or app (whatever they give you as XLSX/PDF).
-            </p>
+            <p><strong>Download</strong> your latest bank / wallet exports (XLSX or PDF).</p>
           </li>
           <li>
-            <p>
-              <strong>Upload</strong> those files below. As soon as you confirm in the file dialog, they are sent automatically—no extra click needed.
-            </p>
+            <p><strong>Upload</strong> them in step 1. Files send as soon as you confirm in the file dialog.</p>
           </li>
           <li>
-            <p>
-              <strong>Process</strong> to merge everything, categorize, and compute metrics. All movements in your files are included;
-              the output filename uses the month of the <strong>latest transaction date</strong> (not a filter).
-            </p>
+            <p><strong>Set budgets</strong> in step 2 — monthly targets per category (and an overall cap). Add or remove categories here.</p>
           </li>
           <li>
-            <p>
-              <strong>Optional:</strong> tweak category rules (keywords + regex) and run <strong>Process</strong> again to refine labels.
-            </p>
+            <p><strong>Run the pipeline</strong> in step 3. Use <strong>Advanced → Category rules</strong> to add <em>keywords</em> so transactions map to each category (required for <strong>new</strong> categories you create).</p>
           </li>
         </ol>
         <div class="regex-note">
-          <strong style="color: var(--text)">Why regex in the JSON?</strong>
-          Each category can list <code>keywords</code> (simple substrings) and <code>regex</code> patterns. Regex lets you match
-          messy descriptions—e.g. merchant names with extra numbers, or “PAGO VISA *1234”. The pipeline tests your transaction
-          text against those patterns so recurring merchants land in the right bucket. Edit rules under <strong>Advanced</strong> below.
+          <strong style="color: var(--text)">Regex (optional)</strong> in Advanced category rules: besides plain keywords, you can use <code>regex</code> patterns for messy bank descriptions. See step 3.
         </div>
         <div class="anchor-hint">
           <a href="#upload">↓ Upload files</a>
+          <a href="#budgets">↓ Budgets</a>
         </div>
       </section>
 
@@ -346,7 +427,7 @@
         </form>
         <p class="hint-upload">
           <strong>Tip:</strong> After you pick files and click <strong>Open</strong> in the system dialog, they upload automatically.
-          Use <strong>Upload again</strong> only if you need to resend the same file (some browsers won’t re-fire the picker) or retry after an error.
+          Use <strong>Upload again</strong> only if you need to resend the same file or retry after an error.
         </p>
         {% if files and files|length > 0 %}
           <div class="muted" style="margin-top: 14px">Files in this session:</div>
@@ -358,19 +439,90 @@
         {% endif %}
       </div>
 
-      <div class="card">
-        <h3>2 · Process</h3>
+      <div class="card" id="budgets">
+        <h3>2 · Budgets &amp; category names</h3>
         <p class="muted">
-          Imports <strong>all</strong> movements from the files you uploaded (no month filter). The output name and <code>periodo</code>
-          label use the calendar month of the <strong>latest</strong> transaction date. If you mix multiple months, you still get one combined result.
+          Each card is a <strong>monthly spending target</strong> for metrics (same currency as your file). The overall cap drives the <strong>Total</strong> row.
         </p>
+        <div class="callout callout-step2">
+          <strong>If you add a new category</strong> that isn’t in the defaults, you <strong>must</strong> add <strong>keywords</strong> for it under
+          <strong>Step 3 → Advanced → Category rules</strong>. Otherwise transactions won’t land there and may stay <em>Uncategorized</em>.
+        </div>
+        <div class="budget-total-row">
+          <label for="budgetTotal">Overall monthly budget cap (Total row)</label>
+          <input type="number" id="budgetTotal" min="0" step="1" value="{{ budget_total }}" />
+        </div>
+        <div class="budget-grid" id="budgetCards">
+          {% for c in budget_categories %}
+          <div class="budget-card">
+            <button type="button" class="btn-remove" title="Remove this category" aria-label="Remove category">×</button>
+            <div class="budget-card-fields">
+              <label>Category name
+                <input type="text" class="bc-name" value="{{ c.name|e }}" autocomplete="off" />
+              </label>
+              <label>Monthly budget target
+                <input type="number" class="bc-budget" min="0" step="1" value="{{ c.budget }}" />
+              </label>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="add-cat">
+          <h4>Add a category</h4>
+          <div class="ac-row">
+            <label>Name <input type="text" id="addCatName" placeholder="e.g. Mascotas" autocomplete="off" /></label>
+            <label>Budget <input type="number" id="addCatBudget" min="0" step="1" placeholder="0" /></label>
+            <button type="button" class="secondary" id="addCatBtn">Add to list</button>
+          </div>
+        </div>
+
+        <div class="save-budget-row">
+          <button type="button" class="btn-save-budget" id="saveBudgetsBtn">Save budgets</button>
+          <span id="budgetSaveStatus" class="muted"></span>
+        </div>
+        <p class="muted" style="margin-top: 12px">
+          Power users: <a href="/objetivos">Edit budgets as JSON</a>
+        </p>
+      </div>
+
+      <template id="budgetCardTpl">
+        <div class="budget-card">
+          <button type="button" class="btn-remove" title="Remove this category" aria-label="Remove category">×</button>
+          <div class="budget-card-fields">
+            <label>Category name
+              <input type="text" class="bc-name" value="" autocomplete="off" />
+            </label>
+            <label>Monthly budget target
+              <input type="number" class="bc-budget" min="0" step="1" value="0" />
+            </label>
+          </div>
+        </div>
+      </template>
+
+      <div class="card" id="process">
+        <h3>3 · Run pipeline</h3>
+        <p class="muted">
+          Imports <strong>all</strong> movements from your uploads (no month filter). The output filename uses the month of the
+          <strong>latest</strong> transaction date.
+        </p>
+        <div class="callout callout-keywords">
+          <strong>Category rules = keywords</strong><br />
+          For each category, you list words that may appear in the transaction <strong>description</strong> (bank text).
+          The pipeline assigns the <strong>first</strong> category whose keyword is found (case-insensitive). Open the JSON editor to add or change keywords and optional <code>regex</code> patterns.
+        </div>
+        <div class="callout callout-hint">
+          Only changed <strong>budget numbers</strong> in step 2? You can run the pipeline without opening Advanced. Open Advanced when you need to fix how transactions are <em>labeled</em>.
+        </div>
         <div class="row">
-          <button id="processBtn" type="button">Run pipeline</button>
+          <button id="processBtn" type="button" class="primary-run">Run pipeline</button>
           <span id="processStatus" class="muted"></span>
         </div>
-        <div class="muted" style="margin-top: 14px">
-          <strong>Advanced:</strong> <a href="/categorias">Category rules</a> · <a href="/objetivos">Budget targets</a> (JSON) — then <strong>Run pipeline</strong> again.
-        </div>
+        <p class="muted" style="margin-top: 16px">
+          <strong>Advanced:</strong>
+          <a href="/categorias">Category rules (JSON)</a>
+          · <a href="/objetivos">Budget targets (JSON)</a>
+        </p>
       </div>
 
       <div class="card">
@@ -421,6 +573,91 @@
 
       fileInput.addEventListener('change', () => {
         doUpload(fileInput.files);
+      });
+
+      function collectBudgetPayload() {
+        const total = parseFloat(document.getElementById('budgetTotal').value);
+        const cards = document.querySelectorAll('#budgetCards .budget-card');
+        const categories = [];
+        for (const card of cards) {
+          const name = (card.querySelector('.bc-name')?.value || '').trim();
+          const raw = card.querySelector('.bc-budget')?.value;
+          const budget = raw === '' || raw === undefined ? NaN : parseFloat(raw);
+          if (!name && (raw === '' || raw === undefined)) continue;
+          categories.push({
+            name,
+            budget: Number.isFinite(budget) ? budget : 0,
+          });
+        }
+        return {
+          total: Number.isFinite(total) ? total : 0,
+          categories,
+        };
+      }
+
+      document.getElementById('budgetCards').addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-remove');
+        if (!btn) return;
+        const card = btn.closest('.budget-card');
+        if (card) card.remove();
+      });
+
+      document.getElementById('addCatBtn').addEventListener('click', () => {
+        const name = (document.getElementById('addCatName').value || '').trim();
+        const bRaw = document.getElementById('addCatBudget').value;
+        const budget = bRaw === '' ? 0 : parseFloat(bRaw);
+        if (!name) {
+          alert('Enter a category name.');
+          return;
+        }
+        const tpl = document.getElementById('budgetCardTpl');
+        const node = tpl.content.cloneNode(true);
+        const card = node.querySelector('.budget-card');
+        card.querySelector('.bc-name').value = name;
+        card.querySelector('.bc-budget').value = Number.isFinite(budget) ? budget : 0;
+        document.getElementById('budgetCards').appendChild(node);
+        document.getElementById('addCatName').value = '';
+        document.getElementById('addCatBudget').value = '';
+      });
+
+      document.getElementById('saveBudgetsBtn').addEventListener('click', async () => {
+        const status = document.getElementById('budgetSaveStatus');
+        const payload = collectBudgetPayload();
+        if (payload.categories.length === 0) {
+          status.textContent = 'Add at least one category with a name.';
+          status.classList.add('danger');
+          return;
+        }
+        const bad = payload.categories.some((c) => !c.name);
+        if (bad) {
+          status.textContent = 'Every row needs a category name (or remove the row).';
+          status.classList.add('danger');
+          return;
+        }
+        status.textContent = 'Saving…';
+        status.classList.remove('danger');
+        try {
+          const res = await fetch('/api/session/budgets', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            const d = data.detail;
+            let msg = 'Save failed';
+            if (typeof d === 'string') msg = d;
+            else if (d && Array.isArray(d.errors)) msg = d.errors.join('; ');
+            else if (d && typeof d === 'object') msg = JSON.stringify(d);
+            status.textContent = msg;
+            status.classList.add('danger');
+            return;
+          }
+          status.textContent = 'Saved.';
+        } catch (e) {
+          status.textContent = 'Network error.';
+          status.classList.add('danger');
+        }
       });
 
       document.getElementById('processBtn').addEventListener('click', async () => {

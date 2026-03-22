@@ -155,7 +155,7 @@ En el MVP web, el **período (YYYY-MM)** del nombre de archivo y de la columna `
 
 Reglas de categorías genéricas: `config/categorias.ejemplo.json`. Para reglas personales en tu PC: ver **`docs/CATEGORIAS_PERSONALES.md`**.
 
-En la UI: **Category rules** (`/categorias`) y **Budget targets** (`/objetivos`) editan el JSON de la sesión; después hay que volver a **Run pipeline** para regenerar métricas.
+En la UI: en la home, **paso 2** permite editar presupuestos por categoría con tarjetas (y sincroniza con `objetivos`). Las **Category rules** (`/categorias`) y el JSON de **Budget targets** (`/objetivos`) siguen disponibles para usuarios avanzados; después hay que **Run pipeline** para regenerar métricas.
 
 ### Variables de entorno (útiles para deploy)
 

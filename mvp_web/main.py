@@ -7,10 +7,12 @@ import threading
 import time
 from pathlib import Path
 
-from fastapi import Cookie, FastAPI, File, Form, HTTPException, Request, Response, UploadFile
+from fastapi import Body, Cookie, FastAPI, File, Form, HTTPException, Request, Response, UploadFile
+from pydantic import BaseModel
 from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
+from .budget_sync import apply_budget_save, budget_state_for_template
 from .executor import InProcessExecutor
 from .pipeline_runner import validate_and_write_categorias_json, validate_and_write_objetivos_json
 from .storage import (
@@ -34,6 +36,16 @@ CLEANUP_INTERVAL_SECONDS = int(os.environ.get("TG_CLEANUP_INTERVAL_SECONDS", "60
 app = FastAPI(title="Spend Tracker (MVP API)")
 templates = Jinja2Templates(directory=str((Path(__file__).parent / "templates").resolve()))
 executor = InProcessExecutor()
+
+
+class BudgetCategoryIn(BaseModel):
+    name: str
+    budget: float
+
+
+class BudgetSaveIn(BaseModel):
+    total: float
+    categories: list[BudgetCategoryIn]
 
 
 @app.get("/health")
@@ -123,6 +135,7 @@ def home(request: Request, tg_session: str | None = Cookie(default=None)):
     sp = ensure_session(sid)
     _init_session_files(sp)
     files = sorted([p.name for p in sp.inputs.glob("*") if p.is_file()])
+    budget = budget_state_for_template(sp.objetivos_path)
     resp = templates.TemplateResponse(
         request=request,
         name="home.html",
@@ -130,6 +143,8 @@ def home(request: Request, tg_session: str | None = Cookie(default=None)):
             "request": request,
             "session_id_short": sid[:8],
             "files": files,
+            "budget_total": budget["total"],
+            "budget_categories": budget["categories"],
         },
     )
     if need_cookie:
@@ -163,6 +178,27 @@ async def upload_files(
         saved.append(name)
 
     return {"ok": True, "saved": saved, "total_bytes": total}
+
+
+@app.post("/api/session/budgets")
+def save_session_budgets(
+    response: Response,
+    tg_session: str | None = Cookie(default=None),
+    body: BudgetSaveIn = Body(...),
+):
+    sid = _get_or_create_session_id(response, tg_session)
+    sp = ensure_session(sid)
+    _init_session_files(sp)
+    pairs = [(c.name, c.budget) for c in body.categories]
+    errs = apply_budget_save(
+        sp.objetivos_path,
+        sp.categorias_path,
+        total=body.total,
+        categories=pairs,
+    )
+    if errs:
+        raise HTTPException(status_code=400, detail={"errors": errs})
+    return {"ok": True}
 
 
 @app.post("/api/process")

@@ -63,11 +63,30 @@
       code { background: var(--surface2); padding: 2px 7px; border-radius: 6px; font-size: 13px; }
       a { color: var(--accent); font-weight: 600; text-decoration: none; }
       a:hover { text-decoration: underline; }
+      .hero-banner {
+        padding: 1.1rem 1.25rem;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #f5f3ff 0%, #eef2ff 100%);
+        border: 1px solid #c7d2fe;
+        margin-bottom: 1.25rem;
+        font-size: 15px;
+        line-height: 1.55;
+        color: #1e1b4b;
+      }
+      .hero-banner strong { font-weight: 700; }
+      .hero-banner code { font-size: 13px; }
     </style>
   </head>
   <body>
     <div class="wrap">
       <h2>Categories (advanced)</h2>
+      <div class="hero-banner">
+        <strong>What this does:</strong> for each category you list <strong>keywords</strong> (simple substrings) and optional
+        <code>regex</code> patterns. When a transaction is processed, its <strong>description</strong> text is scanned
+        (case-insensitive). The <strong>first</strong> category whose keyword appears in that text wins — so order matters.
+        Add words that show up in your bank / Mercado Pago strings (merchant names, “PAGO VISA”, etc.) so spending lands in the right bucket.
+        If you <strong>added a new category</strong> on the home page (step 2), you must add keywords for it <strong>here</strong> or those transactions will stay <em>Uncategorized</em>.
+      </div>
       <p class="muted">
         Default rules are <strong>generic</strong>. For personal merchant names, copy <code>config/categorias.json</code> locally
         on your machine (not committed to Git) — see <code>docs/CATEGORIAS_PERSONALES.md</code>.
